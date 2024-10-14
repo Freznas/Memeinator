@@ -1,5 +1,8 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
+import { GenerateView } from "./GenerateView"
+import { SavedView } from "./SavedView"
+
 
 export default function App() {
   return (
