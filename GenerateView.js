@@ -1,42 +1,66 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import { useEffect } from 'react';
 import { StyleSheet, Text, View,Button  } from 'react-native';
 export function GenerateView()
 {
-  async function saveData(){
-        const data = [
-            { id: 1, name: 'Bulbasaur', type: 'Grass' },
-            { id: 2, name: 'Charmander', type: 'Fire' },
-            { id: 3, name: 'Squirtle', type: 'Water' },
-        ];
+  var memes = []
+
+//get the meme collection from storage if it exsists.
+  useEffect(() =>{
+    getMemes()
+  });
+  async function saveMeme(){
     
+    var newMeme = {
+        "id": "61579",
+        "name": "One Does Not Simply",
+        "url": "https://i.imgflip.com/1bij.jpg",
+        "width": 568,
+        "height": 335,
+        "box_count": 2
+    }
+    memes.push(newMeme)
+
         try {
-            // Store the array of objects as a JSON string
-            await AsyncStorage.setItem('pokemonList', JSON.stringify(data));
+            await AsyncStorage.setItem('memesList', JSON.stringify(memes));
             console.log('Data saved');
         } catch (error) {
             console.error('Error saving data:', error);
         }
     
 }
-
-async function getData()
+async function getMemes()
 {
         try {
-            const jsonValue = await AsyncStorage.getItem('pokemonList');
-            if (jsonValue !== null) {
-                const data = JSON.parse(jsonValue);
+            const storedMemes = await AsyncStorage.getItem('memesList');
+            //handle data from storage
+            if (storedMemes !== null) {
+                const data = JSON.parse(storedMemes);
                 console.log('Retrieved data:', data);
+                memes =[... data]
             } else {
-                console.log('No data found');
+                console.log('thou art memeless');
             }
         } catch (error) {
-            console.error('Error retrieving data:', error);
+            console.error('Error retrieving memes:', error);
         }
+}
+
+async function deleteAllMemes()
+{
+        try {
+             await AsyncStorage.clear()
+            console.log("Deleted all memes")
+            memes = []
+         } catch (error) {
+                console.error('Error clearing storage:', error);
+              }
 }
 return(
     <View>
-            <Button title ="Save" onPress = {saveData} />
-            <Button title ="GET" onPress = {getData} />
+            <Button title ="Save" onPress = {saveMeme} />
+            <Button title ="GET" onPress = {getMemes} />
+            <Button title ="DELETE" onPress = {deleteAllMemes} />
     </View>
 )
 }
