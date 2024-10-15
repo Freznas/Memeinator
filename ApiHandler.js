@@ -5,7 +5,6 @@ import {StyleSheet, View, ScrollView, Image, Text, Pressable } from 'react-nativ
 export function ApiHandler() {
 
     const [data, setData] = useState(null)
-    const [currentMeme, setMeme] = useState(null)
 
     useEffect(() => {
         fetchMemes()
@@ -28,13 +27,10 @@ export function ApiHandler() {
         <View style={{backgroundColor: "lightgreen" }}>
             <ScrollView horizontal>
                 {
-                    data ? (data.map(item => (<Pressable key={item.id} onPress={setMeme}><Image source={{ uri: item.url }} style={styles.memeScroll} /></Pressable>)))
+                    data ? (data.map(item => (<Pressable key={item.id}><Image source={{ uri: item.url }} style={styles.memeScroll} /></Pressable>)))
                         : (<Text>Loading</Text>)
-
                 }
             </ScrollView>
-
-            <Text>{currentMeme ? `Du har tryckt på: ${currentMeme}` : `Inget att visa` }</Text>
 
         </View>
     )
