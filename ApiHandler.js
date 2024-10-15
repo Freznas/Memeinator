@@ -9,7 +9,6 @@ export function ApiHandler() {
 
     useEffect(() => {
         fetchMemes()
-        printMeme()
     }, [])
 
     function fetchMemes() {
@@ -25,12 +24,6 @@ export function ApiHandler() {
             .catch(err => console.error('Error: ', err));
     }
 
-    function printMeme() {
-        if(currentMeme != null) {
-            console.log(currentMeme)
-        } 
-    }
-
     return (
         <View style={{backgroundColor: "lightgreen" }}>
             <ScrollView horizontal>
@@ -40,6 +33,8 @@ export function ApiHandler() {
 
                 }
             </ScrollView>
+
+            <Text>{currentMeme ? `Du har tryckt på: ${currentMeme}` : `Inget att visa` }</Text>
 
         </View>
     )
