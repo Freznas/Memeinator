@@ -1,24 +1,31 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
-import { GenerateView } from "./GenerateView"
-import { SavedView } from "./SavedView"
+//Import dependencies & modules from react/react-native
+import * as React from "react";
+import { NavigationContainer } from "@react-navigation/native";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { SavedView } from "./SavedView";
+import { GenerateView } from "./GenerateView";
+//Import local modules
+// import GenerateView from './GenerateView'; // Importera GenerateView
+// import SavedView from './SavedView';       // Importera SavedView
 
+//Create tab navigator instance
+const Tab = createBottomTabNavigator();
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <GenerateView />
-      <StatusBar style="auto" />
-    </View>
+    <NavigationContainer>
+      <Tab.Navigator>
+        <Tab.Screen
+          name="Generate"
+          component={GenerateView}
+          options={{ headerShown: false }} // Hides the header for the "Generate"View
+        />
+        <Tab.Screen
+          name="Saved"
+          component={SavedView}
+          options={{ headerShown: false }} // Hides the header for the "Saved"View
+        />
+      </Tab.Navigator>
+    </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
