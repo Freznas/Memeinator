@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useEffect } from 'react';
-import {View, StyleSheet, Text, View,Button  } from 'react-native';
+import { TouchableOpacity, StyleSheet, Text, View,Button  } from 'react-native';
 import React from "react";
 export function GenerateView()
 {
@@ -59,13 +59,27 @@ async function deleteAllMemes()
 }
 return(
     <View>
-            <Button title ="Save" onPress = {saveMeme} />
-            <Button title ="GET" onPress = {getMemes} />
-            <Button title ="DELETE" onPress = {deleteAllMemes} />
+      <TouchableOpacity style={styles.btn} onPress={() => saveMeme()}>
+        <Text style={styles.buttonText}>Save Meme </Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.btn} onPress={() => getMemes()}>
+        <Text style={styles.buttonText}>Get all Memes</Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.btn} onPress={() => deleteAllMemes()}>
+        <Text style={styles.buttonText}>Meme Delete</Text>
+      </TouchableOpacity>
     </View>
 )
 }
 const styles = StyleSheet.create({
+  btn:{
+        width: 150,
+        padding: 10,
+        margin: 10,
+        borderWidth: 1,
+        borderColor: "thistle",
+        borderRadius: 50,
+  },
   container: {
     flex: 1,
     justifyContent: "center",
