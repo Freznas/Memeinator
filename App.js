@@ -12,9 +12,6 @@ const Tab = createBottomTabNavigator();
 
 export default function App() {
 
-  // TESTKOD
-  const Stack = createNativeStackNavigator()
-
   return (
     <NavigationContainer>
       <Tab.Navigator>
