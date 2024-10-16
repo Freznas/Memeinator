@@ -4,6 +4,7 @@ import { FlatList } from 'react-native';
 import { useState, useEffect} from 'react';
 import { ScrollView } from 'react-native';
 import { ApiHandler } from './ApiHandler'
+import {LinearGradient} from 'expo-linear-gradient';
 
 // Dummybild som används tillfälligt
 const localImage = require("./assets/Image20240927091254.png")
@@ -95,7 +96,12 @@ export function GenerateView(){
                 }
   }
     return(
-        <View style={[styles.container]}>
+        <LinearGradient
+            colors={['#00D9E1', '#133CE3', '#8D4EFA']} // Gradient colors
+            start={{x:0.3, y:0}}
+            end={{x:0.7, y:1}}
+            style={styles.container}
+        > 
 
             <Text style={styles.titleTextStyle}> Generate Your Own Memes </Text>
 
@@ -161,9 +167,9 @@ export function GenerateView(){
                     <Text>Discard</Text>
                     </Pressable>
 
-              </View>
-        </View>
-    )
+            </View>
+        </LinearGradient>
+    );
 }
 
 const styles = StyleSheet.create({

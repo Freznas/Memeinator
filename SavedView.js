@@ -7,6 +7,7 @@ import {
   ScrollView,
   Text,
 } from "react-native";
+import {LinearGradient} from 'expo-linear-gradient';
 
 // Import images from the assets folder
 import image1 from "./assets/01.jpg";
@@ -19,6 +20,13 @@ export function SavedView({ navigation }) {
   const images = [image1, image2, image3, image4];
 
   return (
+    <LinearGradient
+            colors={['#00D9E1', '#133CE3', '#8D4EFA']} // Gradient colors
+            start={{x:0.3, y:0}}
+            end={{x:0.7, y:1}}
+            style={styles.container}
+        >
+
     <ScrollView contentContainerStyle={styles.container}>
       {images.map((image, index) => (
         <View key={index} style={styles.itemContainer}>
@@ -44,13 +52,13 @@ export function SavedView({ navigation }) {
         </View>
       ))}
     </ScrollView>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    backgroundColor: "#fff",
     padding: 20,
   },
   itemContainer: {
