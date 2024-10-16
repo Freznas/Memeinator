@@ -130,7 +130,7 @@ export function GenerateView(){
             <Text style={styles.underTitleTextStyle}>Choose Your Meme</Text>
             </View>
 
-            
+
             <ScrollView horizontal>
             {
                 // Tillagd för att hämta memes från API - JH
@@ -183,11 +183,18 @@ const styles = StyleSheet.create({
     },
     //Style för titeln
     titleTextStyle: {
-        marginTop: 20
+        marginTop: 60,
+        marginBottom: 10,
+        fontWeight: 'bold',
+        color: 'white',
+        fontSize: 25
     },
-    //Style för "choose your meme" text
+    //Style för "choose your meme" text <-- Do we need this text here? - Juhee
     underTitleTextStyle: {
-        marginTop: 20
+        marginTop: 20,
+        fontWeight: 'normal',
+        color: 'white',
+        fontSize: 18
     },
     //Style för den bild som visar den skapade memen med text
     imageStyle: {
@@ -195,7 +202,7 @@ const styles = StyleSheet.create({
         height: 250,
         marginTop: 20, 
         borderWidth: 2,
-        borderColor: "black"
+        borderColor: "white"
     },
     //Style för bilder i listan där hämtade memes visas
     listImage : {
@@ -250,12 +257,9 @@ const styles = StyleSheet.create({
         padding: 10,
     },
     memeScroll: {
-        margin: 20,
-        borderColor: 'black',
-        borderRadius: 5,
-        borderWidth: 5,
-        width: 100,
-        height: 100,
+        margin: 10,
+        width: 70,
+        height: 70,
         alignItems: 'center',
         justifyContent: 'center',
     }
