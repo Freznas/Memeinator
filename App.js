@@ -1,11 +1,14 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, Button } from 'react-native';
+//Import dependencies & modules from react/react-native
+import * as React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { GenerateView } from "./GenerateView"
-import { SavedView } from "./SavedView"
-import { ApiHandler } from './ApiHandler';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
+//Import local modules
+import GenerateView from './GenerateView'; // Importera GenerateView
+import SavedView from './SavedView';       // Importera SavedView
+
+//Create tab navigator instance
+const Tab = createBottomTabNavigator();
 
 export default function App() {
 
@@ -14,30 +17,22 @@ export default function App() {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName='GenerateView'>
-        <Stack.Screen name='GenerateView' component={GenerateView} />
-        <Stack.Screen name='Api' component={ApiHandler}/>
-      </Stack.Navigator>
-
- 
-
-{
-// TESTKOD SLUT
-
-/*     <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <Button title="Api" onPress={() => navigation.navigate('Api')}></Button>
-      <StatusBar style="auto" />
-    </View> */}
+      <Tab.Navigator>
+        <Tab.Screen 
+        
+          name="Generate" 
+          component={GenerateView}
+          options={{ headerShown: false }} // Hides the header for the "Generate"View
+        />
+        <Tab.Screen 
+          name="Saved" 
+          component={SavedView} 
+          options={{ headerShown: false }} // Hides the header for the "Saved"View
+        />
+      </Tab.Navigator>
     </NavigationContainer>
+    
+ 
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
