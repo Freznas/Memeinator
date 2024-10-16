@@ -76,7 +76,7 @@ export function GenerateView(){
             </View>
 
             
-            <ScrollView horizontal>
+            <ScrollView horizontal={true} style={styles.listStyle}>
             {
                 // Tillagd för att hämta memes från API - JH
                 data ? (data.map(item => (<Pressable key={item.id} onPress={() => setCurrentMeme(item)}><Image source={{ uri: item.url }} style={styles.memeScroll} /></Pressable>)))

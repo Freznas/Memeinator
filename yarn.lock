@@ -5343,7 +5343,7 @@ react-native-screens@3.31.1:
 
 react-native-web@~0.19.10:
   version "0.19.12"
-  resolved "https://registry.npmjs.org/react-native-web/-/react-native-web-0.19.12.tgz"
+  resolved "https://registry.yarnpkg.com/react-native-web/-/react-native-web-0.19.12.tgz#30d1fd70bdff7886f43c0c2698629d830fade6bc"
   integrity sha512-o2T0oztoVDQjztt4YksO9S1XRjoH/AqcSvifgWLrPJgGVbMWsfhILgl6lfUdEamVZzZSVV/2gqDVMAk/qq7mZw==
   dependencies:
     "@babel/runtime" "^7.18.6"
