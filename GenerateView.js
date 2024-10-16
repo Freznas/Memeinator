@@ -3,6 +3,7 @@ import { View, Text, Button, StyleSheet, Image, TextInput, Pressable} from "reac
 import { FlatList } from 'react-native';
 import { useState, useEffect} from 'react';
 import { ScrollView } from 'react-native';
+import { ApiHandler } from './ApiHandler'
 
 // Dummybild som används tillfälligt
 const localImage = require("./assets/Image20240927091254.png")
@@ -11,6 +12,9 @@ const localImage = require("./assets/Image20240927091254.png")
 const dummyImageData = new Array(10).fill(localImage);
 
 export function GenerateView(){
+    // Hämtar data och fetchMemes() från ApiHandler
+    const { data, fetchMemes } = ApiHandler();
+    const [currentMeme, setCurrentMeme] = useState(null)
 
     const [texts, setTexts] = useState([])
     const [textFieldsCount, setTextFieldsCount] = useState(0);
@@ -25,6 +29,7 @@ export function GenerateView(){
             setTexts(Array(responseCount).fill(""));
         }
         fetchTextFieldCount()
+        fetchMemes()
     },[]);
 
     const handleTextChange = (text, index) =>{
@@ -46,8 +51,12 @@ export function GenerateView(){
             <Text style={styles.titleTextStyle}> Generate Your Own Memes </Text>
 
             <View style={styles.memeContainer}>
+            
+            {/* Sätter bild till den meme du klickar på. Finns ingen, väljs dummybild - JH */}
             <Image 
-                source={localImage} 
+                source={currentMeme
+                    ?  { uri: currentMeme.url }
+                    : localImage} 
                 style={styles.imageStyle} 
             ></Image>
 
@@ -60,27 +69,21 @@ export function GenerateView(){
 
 
             ))}
-            
-
+            </View>
+            {/* Fick flytta ut denna och ändra till scrollView på rad 78 då renderingen inte fungerade på ios - JH */}
+            <View>
+            <Text style={styles.underTitleTextStyle}>Choose Your Meme</Text>
             </View>
 
-            <Text style={styles.underTitleTextStyle}>Choose Your Meme</Text>
+            
+            <ScrollView horizontal>
+            {
+                // Tillagd för att hämta memes från API - JH
+                data ? (data.map(item => (<Pressable key={item.id} onPress={() => setCurrentMeme(item)}><Image source={{ uri: item.url }} style={styles.memeScroll} /></Pressable>)))
+                : (<Text>Loading</Text>)
+            }
+            </ScrollView>
 
-            <FlatList
-              // Data för listan (bilder)
-              data={dummyImageData} 
-              // Rendera varje bild i listan
-              renderItem={({ item }) => (
-                  <Image 
-                      source={item} 
-                      style={styles.listImage} 
-                      resizeMode="contain"
-                  />
-              )}
-              horizontal
-              style={styles.listStyle}
-              
-              />
               <ScrollView>
 
                 {/* Skapar visst antal textinputs baserat på värdet av textfieldCount, detta baseras också på APIns hämtning. */}
@@ -148,7 +151,7 @@ const styles = StyleSheet.create({
     listImage : {
         width: 100, 
         height: 100,
-        marginHorizontal: 5, 
+        marginHorizontal: 20, 
     },
     //Style för själva listan
     listStyle: {
@@ -195,6 +198,16 @@ const styles = StyleSheet.create({
         backgroundColor: "lightgray", 
         alignItems: "center", 
         padding: 10,
+    },
+    memeScroll: {
+        margin: 20,
+        borderColor: 'black',
+        borderRadius: 5,
+        borderWidth: 5,
+        width: 100,
+        height: 100,
+        alignItems: 'center',
+        justifyContent: 'center',
     }
     
 })
