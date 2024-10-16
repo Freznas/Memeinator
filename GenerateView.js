@@ -130,7 +130,6 @@ export function GenerateView(){
             <Text style={styles.underTitleTextStyle}>Choose Your Meme</Text>
             </View>
 
-
             <ScrollView horizontal>
             {
                 // Tillagd för att hämta memes från API - JH
@@ -140,7 +139,6 @@ export function GenerateView(){
             </ScrollView>
 
               <ScrollView>
-
                 {/* Skapar visst antal textinputs baserat på värdet av textfieldCount, detta baseras också på APIns hämtning. */}
               {Array.from({ length: textFieldsCount }).map((_, index) => (
                 <TextInput
@@ -181,6 +179,7 @@ const styles = StyleSheet.create({
         padding: 20,
         
     },
+    
     //Style för titeln
     titleTextStyle: {
         marginTop: 60,
@@ -189,6 +188,7 @@ const styles = StyleSheet.create({
         color: 'white',
         fontSize: 25
     },
+
     //Style för "choose your meme" text <-- Do we need this text here? - Juhee
     underTitleTextStyle: {
         marginTop: 20,
@@ -196,6 +196,7 @@ const styles = StyleSheet.create({
         color: 'white',
         fontSize: 18
     },
+
     //Style för den bild som visar den skapade memen med text
     imageStyle: {
         width: 250,
@@ -204,23 +205,27 @@ const styles = StyleSheet.create({
         borderWidth: 2,
         borderColor: "white"
     },
+
     //Style för bilder i listan där hämtade memes visas
     listImage : {
         width: 100, 
         height: 100,
         marginHorizontal: 20, 
     },
+
     //Style för själva listan
     listStyle: {
         marginTop: 20,
         maxHeight: 120 
     },
+
     //Style på container för att overlayText ska centreras med image
     memeContainer: {
         position: "relative",
         alignItems: "center",
     
     },
+
     //Style för texten ovanpå meme
     overlayText: {
         position: "absolute",
@@ -229,25 +234,25 @@ const styles = StyleSheet.create({
         backgroundColor: 'transparent',
         padding: 5,
         borderRadius: 5,
-        
     },
+
     //Style för inputfields
     textInput: {
-        width: "100%",
+        width: 350,
         padding: 10,
         marginTop: 10,
-        borderWidth: 1,
-        borderColor: "gray",
+        backgroundColor: 'white',
         borderRadius: 5,
     },
+
     //Style för buttonContainer
     buttonContainer: {
         flexDirection: "row",
         width: "100%",
         padding: 20,
         justifyContent: "space-between"
-        
     },
+
     //Style för knappar
     pressableStyle: {
         flex: 1, 
@@ -256,12 +261,14 @@ const styles = StyleSheet.create({
         alignItems: "center", 
         padding: 10,
     },
+
     memeScroll: {
         margin: 10,
+        marginBottom: 40,
         width: 70,
         height: 70,
         alignItems: 'center',
         justifyContent: 'center',
+        backgroundColor: 'white'
     }
-    
 })
