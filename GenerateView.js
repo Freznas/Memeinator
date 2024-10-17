@@ -20,6 +20,7 @@ export function GenerateView(){
     const [texts, setTexts] = useState([])
     const [textFieldsCount, setTextFieldsCount] = useState(0);
     const [imageSource, setImageSource] = useState(localImage);
+    const [showTextInput, setShowTextInput] = useState(true)
 
     const [memes, setMemes] = useState([])
     useEffect(() =>{
@@ -48,6 +49,7 @@ export function GenerateView(){
         setTexts(Array(textFieldsCount).fill(""))
         setCurrentMeme(null)
         setImageSource(localImage)
+        setShowTextInput(false)
         
     }
 
@@ -135,7 +137,8 @@ export function GenerateView(){
                     <Pressable 
                     onPress={() => {
                     setCurrentMeme(item); 
-                    setTextFieldsCount(item.box_count);}}>
+                    setTextFieldsCount(item.box_count)
+                    setShowTextInput(true);}}>
                     <Image source={{ uri: item.url }} style={styles.memeScroll} />
                     </Pressable>)}
                 ListEmptyComponent={<Text>Loading...</Text>} 
@@ -145,7 +148,7 @@ export function GenerateView(){
               <ScrollView>
                 {/* Skapar visst antal textinputs baserat på värdet av textfieldCount, detta baseras också på APIns hämtning. */}
             
-              {Array.from({ length: textFieldsCount }).map((_, index) => (
+              {showTextInput && Array.from({ length: textFieldsCount }).map((_, index) => (
                 <TextInput
                     key={index}
                     style={styles.textInput}
