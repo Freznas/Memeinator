@@ -151,19 +151,21 @@ export function GenerateView(){
             ))}
               </ScrollView>
 
-              <View style={styles.buttonContainer}>
+            <View style={styles.buttonContainer}>
+            
                 <Pressable style={styles.pressableStyle} 
-                onPress = { () =>  saveMemeInAsyncStorage()}>
-                    <Text>Save</Text>
-                    </Pressable>
-                    
-                    <Pressable style={styles.pressableStyle} 
                 onPress = { () =>  deleteAllMemes()}>
-                    <Text>Delete Storage</Text>
-                    </Pressable>
+                <Text style={styles.buttonTextStyle}>Delete Storage</Text>
+                </Pressable>
+
                 <Pressable style={styles.pressableStyle} onPress={handleDiscard}>
-                    <Text>Discard</Text>
-                    </Pressable>
+                <Text style={styles.buttonTextStyle}>Discard</Text>
+                </Pressable>
+
+                <Pressable style={styles.pressableStyleSave} 
+                onPress = { () =>  saveMemeInAsyncStorage()}>
+                <Text style={styles.buttonTextStyle}>Save</Text>
+                </Pressable>
 
             </View>
         </LinearGradient>
@@ -248,8 +250,8 @@ const styles = StyleSheet.create({
     //Style för buttonContainer
     buttonContainer: {
         flexDirection: "row",
-        width: "100%",
-        padding: 20,
+        width: '100%',
+        paddingTop: 10,
         justifyContent: "space-between"
     },
 
@@ -260,6 +262,22 @@ const styles = StyleSheet.create({
         backgroundColor: "lightgray", 
         alignItems: "center", 
         padding: 10,
+        borderRadius: 5
+    },
+
+    pressableStyleSave: {
+        flex: 1, 
+        margin: 10, 
+        backgroundColor: "#FFCF23", 
+        alignItems: "center", 
+        padding: 10,
+        borderRadius: 5
+    },
+
+    buttonTextStyle: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        textAlign: 'center'
     },
 
     memeScroll: {
