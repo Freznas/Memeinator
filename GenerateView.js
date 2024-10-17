@@ -55,9 +55,12 @@ export function GenerateView(){
 
         try {
             //Put array in storage
-            await AsyncStorage.setItem('memesList', JSON.stringify(updatedmemes));
-            console.log('Meme Saved!');
-            alert("Meme Saved!")
+            if(currentMeme!=null)
+            {
+                await AsyncStorage.setItem('memesList', JSON.stringify(updatedmemes));
+                console.log('Meme Saved!');
+                alert("Meme Saved!")
+            }
         } catch (error) {
             console.error('Error saving Meme:', error);
         }
@@ -69,6 +72,11 @@ export function GenerateView(){
               if (storedMemes !== null) {
                  setMemes(JSON.parse(storedMemes))
                  console.log('Retrieved memes from asyncStorage:' + JSON.parse(storedMemes));
+                 var a = JSON.parse(storedMemes)
+                 for(let i = 0; i < a.length; i++)
+                 {
+                    console.log(a[i])
+                 }
               } else {
                   console.log('Async Storage contains no memes');
               }
