@@ -10,6 +10,7 @@ export function SavedView() {
   const [memeList, setMemeList] = useState([]);
   const [selectedMeme, setSelectedMeme] = useState(null);
 
+  // A function to load existing meme
   const loadMemes = async () => {
     try {
       const storedMemes = await AsyncStorage.getItem("memesList");
@@ -21,7 +22,7 @@ export function SavedView() {
     }
   };
 
-  // Use useFocusEffect to reload the memes whenever the screen is focused
+  // useFocusEffect is used to see the memes without refreshing the browser
   useFocusEffect(
     useCallback(() => {
       loadMemes(); // Load memes when screen comes into focus
@@ -68,7 +69,7 @@ export function SavedView() {
       console.error("Error saving memes:", error);
     }
   };
-
+  // select a meme
   const toggleSelectMeme = (meme) => {
     setSelectedMeme((prevSelected) => (prevSelected === meme ? null : meme));
   };
@@ -118,7 +119,7 @@ const styles = StyleSheet.create({
   scrollContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
-    padding: 10, // Add padding to create space on the sides
+    padding: 10,
   },
   itemContainer: {
     margin: 10,
@@ -127,7 +128,7 @@ const styles = StyleSheet.create({
   },
   image: {
     height: 150,
-    width: 150, // Set a fixed width of 150px
+    width: 150,
     borderRadius: 10,
     padding: 10,
   },
