@@ -19,6 +19,7 @@ export function GenerateView(){
 
     const [texts, setTexts] = useState([])
     const [textFieldsCount, setTextFieldsCount] = useState(0);
+    const [imageSource, setImageSource] = useState(localImage);
 
     const [memes, setMemes] = useState([])
     useEffect(() =>{
@@ -45,6 +46,9 @@ export function GenerateView(){
     //Nollställer textArrayen vid discard
     const handleDiscard = () =>{
         setTexts(Array(textFieldsCount).fill(""))
+        setCurrentMeme(null)
+        setImageSource(localImage)
+        
     }
 
     const saveMemeInAsyncStorage = async() =>{
@@ -103,7 +107,7 @@ export function GenerateView(){
             <Image 
                 source={currentMeme
                     ?  { uri: currentMeme.url }
-                    : localImage} 
+                    : imageSource} 
                 style={styles.imageStyle} 
             ></Image>
 
@@ -140,6 +144,7 @@ export function GenerateView(){
 
               <ScrollView>
                 {/* Skapar visst antal textinputs baserat på värdet av textfieldCount, detta baseras också på APIns hämtning. */}
+            
               {Array.from({ length: textFieldsCount }).map((_, index) => (
                 <TextInput
                     key={index}
