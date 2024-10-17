@@ -8,6 +8,7 @@ import {
   Text,
   Alert,
 } from "react-native";
+import {LinearGradient} from 'expo-linear-gradient';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Icon from "react-native-vector-icons/FontAwesome"; // Import FontAwesome icons
 
@@ -133,6 +134,13 @@ export default function SavedView() {
 
   // Render the component
   return (
+    <LinearGradient
+            colors={['#00D9E1', '#133CE3', '#8D4EFA']} // Gradient colors
+            start={{x:0.3, y:0}}
+            end={{x:0.7, y:1}}
+            style={styles.container}
+        >
+
     <ScrollView contentContainerStyle={styles.container}>
       {photoList.map((imageName, index) => (
         <View key={index} style={styles.itemContainer}>
@@ -159,6 +167,7 @@ export default function SavedView() {
         </View>
       ))}
     </ScrollView>
+    </LinearGradient>
   );
 }
 
@@ -167,7 +176,9 @@ const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     backgroundColor: "#fff",
-    padding: 10,
+    padding: 20,
+  },
+  itemContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
     justifyContent: "space-between",
