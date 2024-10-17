@@ -123,16 +123,20 @@ export function GenerateView(){
             </View>
 
             
-            <ScrollView horizontal={true} style={styles.listStyle}>
-
-
-
-            {
-                // Tillagd för att hämta memes från API - JH
-                data ? (data.map(item => (<Pressable key={item.id} onPress={() => {setCurrentMeme(item),  setTextFieldsCount(item.box_count)}}><Image source={{ uri: item.url }} style={styles.memeScroll} /></Pressable>)))
-                : (<Text>Loading</Text>)
-            }          
-            </ScrollView>
+            <FlatList
+                data={data} 
+                horizontal={true} 
+                keyExtractor={item => item.id.toString()} 
+                renderItem={({ item }) => (
+                    <Pressable 
+                    onPress={() => {
+                    setCurrentMeme(item); 
+                    setTextFieldsCount(item.box_count);}}>
+                    <Image source={{ uri: item.url }} style={styles.memeScroll} />
+                    </Pressable>)}
+                ListEmptyComponent={<Text>Loading...</Text>} 
+                style={styles.listStyle}
+            ></FlatList>
 
               <ScrollView>
                 {/* Skapar visst antal textinputs baserat på värdet av textfieldCount, detta baseras också på APIns hämtning. */}
