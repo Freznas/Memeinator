@@ -156,12 +156,6 @@ export function GenerateView(){
               </ScrollView>
 
             <View style={styles.buttonContainer}>
-            
-                <Pressable style={styles.pressableStyle} 
-                onPress = { () =>  deleteAllMemes()}>
-                <Text style={styles.buttonTextStyle}>Delete Storage</Text>
-                </Pressable>
-
                 <Pressable style={styles.pressableStyle} onPress={handleDiscard}>
                 <Text style={styles.buttonTextStyle}>Discard</Text>
                 </Pressable>
