@@ -4,6 +4,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { useFocusEffect } from "@react-navigation/native";
+import { Alert, Platform } from "react-native";
 
 export function SavedView() {
   const [memeList, setMemeList] = useState([]);
@@ -28,14 +29,35 @@ export function SavedView() {
   );
 
   const deleteMeme = (meme) => {
-    if (window.confirm("Are you sure you want to delete this meme?")) {
-      const updatedList = memeList.filter((item) => item !== meme);
-      setMemeList(updatedList);
-      saveMemesToStorage(updatedList); // Call saveMemesToStorage here
-      if (selectedMeme === meme) {
-        setSelectedMeme(null);
+    if (Platform.OS === "ios") {
+      // Use Alert for iOS
+      Alert.alert("Delete Meme", "Are you sure you want to delete this meme?", [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: () => {
+            const updatedList = memeList.filter((item) => item !== meme);
+            setMemeList(updatedList);
+            saveMemesToStorage(updatedList); // Save updated meme list to storage
+            if (selectedMeme === meme) {
+              setSelectedMeme(null);
+            }
+            console.log(`${meme.url} Deleted`);
+          },
+        },
+      ]);
+    } else {
+      // Use window.confirm for other platforms (Android, Web)
+      if (window.confirm("Are you sure you want to delete this meme?")) {
+        const updatedList = memeList.filter((item) => item !== meme);
+        setMemeList(updatedList);
+        saveMemesToStorage(updatedList); // Save updated meme list to storage
+        if (selectedMeme === meme) {
+          setSelectedMeme(null);
+        }
+        console.log(`${meme.url} Deleted`);
       }
-      console.log(`Deleted meme ${meme}`);
     }
   };
 
@@ -96,12 +118,10 @@ const styles = StyleSheet.create({
   scrollContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
-    justifyContent: "space-between",
     padding: 10, // Add padding to create space on the sides
   },
   itemContainer: {
-    width: "auto",
-    marginBottom: 10,
+    margin: 10,
     position: "relative",
     borderRadius: 10,
   },
@@ -109,6 +129,7 @@ const styles = StyleSheet.create({
     height: 150,
     width: 150, // Set a fixed width of 150px
     borderRadius: 10,
+    padding: 10,
   },
   overlay: {
     position: "absolute",
