@@ -8,7 +8,7 @@ import {
   Text,
   Alert,
 } from "react-native";
-import {LinearGradient} from 'expo-linear-gradient';
+import { LinearGradient } from "expo-linear-gradient";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Icon from "react-native-vector-icons/FontAwesome"; // Import FontAwesome icons
 
@@ -32,7 +32,7 @@ const imageAssets = {
   "16.jpg": require("./assets/16.jpg"),
 };
 
-export default function SavedView() {
+export function SavedView() {
   // State to hold the list of photos
   const [photoList, setPhotoList] = useState([]);
   // State to hold the currently selected photo
@@ -135,38 +135,37 @@ export default function SavedView() {
   // Render the component
   return (
     <LinearGradient
-            colors={['#00D9E1', '#133CE3', '#8D4EFA']} // Gradient colors
-            start={{x:0.3, y:0}}
-            end={{x:0.7, y:1}}
-            style={styles.container}
-        >
-
-    <ScrollView contentContainerStyle={styles.container}>
-      {photoList.map((imageName, index) => (
-        <View key={index} style={styles.itemContainer}>
-          <TouchableOpacity onPress={() => toggleSelectPhoto(imageName)}>
-            <Image source={imageAssets[imageName]} style={styles.image} />
-            {selectedPhoto === imageName && (
-              <View style={styles.overlay}>
-                <TouchableOpacity
-                  style={styles.iconButton}
-                  onPress={() => deletePhoto(imageName)} // Delete button
-                >
-                  <Icon name="trash" size={24} color="#fff" /> // Trash icon
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={styles.iconButton}
-                  onPress={() => downloadPhoto(imageName)} // Download button
-                >
-                  <Icon name="download" size={24} color="#fff" /> // Download
-                  icon
-                </TouchableOpacity>
-              </View>
-            )}
-          </TouchableOpacity>
-        </View>
-      ))}
-    </ScrollView>
+      colors={["#00D9E1", "#133CE3", "#8D4EFA"]} // Gradient colors
+      start={{ x: 0.3, y: 0 }}
+      end={{ x: 0.7, y: 1 }}
+      style={styles.container}
+    >
+      <ScrollView contentContainerStyle={styles.container}>
+        {photoList.map((imageName, index) => (
+          <View key={index} style={styles.itemContainer}>
+            <TouchableOpacity onPress={() => toggleSelectPhoto(imageName)}>
+              <Image source={imageAssets[imageName]} style={styles.image} />
+              {selectedPhoto === imageName && (
+                <View style={styles.overlay}>
+                  <TouchableOpacity
+                    style={styles.iconButton}
+                    onPress={() => deletePhoto(imageName)} // Delete button
+                  >
+                    <Icon name="trash" size={24} color="#fff" /> // Trash icon
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.iconButton}
+                    onPress={() => downloadPhoto(imageName)} // Download button
+                  >
+                    <Icon name="download" size={24} color="#fff" /> // Download
+                    icon
+                  </TouchableOpacity>
+                </View>
+              )}
+            </TouchableOpacity>
+          </View>
+        ))}
+      </ScrollView>
     </LinearGradient>
   );
 }
