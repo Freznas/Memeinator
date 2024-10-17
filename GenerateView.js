@@ -47,17 +47,9 @@ export function GenerateView(){
     }
 
     const saveMemeInAsyncStorage = async() =>{
-      //Generate dummy meme
-      var newMeme = {
-        "id": "61579",
-        "name": "One Does Not Simply",
-        "url": "https://i.imgflip.com/1bij.jpg",
-        "width": 568,
-        "height": 335,
-        "box_count": 2
-    }
+     
     //create array with new meme
-    const updatedmemes = [...memes, newMeme]
+    const updatedmemes = [...memes, currentMeme]
     setMemes(updatedmemes)
 
         try {
