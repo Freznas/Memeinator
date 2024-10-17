@@ -50,7 +50,8 @@ export function GenerateView(){
     const saveMemeInAsyncStorage = async() =>{
      
     //create array with new meme
-    const updatedmemes = [...memes, currentMeme]
+    var newMeme = {...currentMeme, texts: texts}
+    const updatedmemes = [...memes, newMeme]
     setMemes(updatedmemes)
 
         try {
