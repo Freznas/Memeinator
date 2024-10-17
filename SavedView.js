@@ -1,151 +1,85 @@
-import React, { useState, useEffect } from "react";
-import {
-  View,
-  Image,
-  TouchableOpacity,
-  StyleSheet,
-  ScrollView,
-  Text,
-  Alert,
-} from "react-native";
+import React, { useState, useEffect, useCallback } from "react";
+import { View, Image, Pressable, StyleSheet, ScrollView } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import Icon from "react-native-vector-icons/FontAwesome"; // Import FontAwesome icons
-
-// Import images from the assets folder and map them to their names
-const imageAssets = {
-  "01.jpg": require("./assets/01.jpg"),
-  "02.jpg": require("./assets/02.jpg"),
-  "03.jpg": require("./assets/03.jpg"),
-  "04.jpg": require("./assets/04.jpg"),
-  "05.jpg": require("./assets/05.jpg"),
-  "06.jpg": require("./assets/06.jpg"),
-  "07.jpg": require("./assets/07.jpg"),
-  "08.jpg": require("./assets/08.jpg"),
-  "09.jpg": require("./assets/09.jpg"),
-  "10.jpg": require("./assets/10.jpg"),
-  "11.jpg": require("./assets/11.jpg"),
-  "12.jpg": require("./assets/12.jpg"),
-  "13.jpg": require("./assets/13.jpg"),
-  "14.jpg": require("./assets/14.jpg"),
-  "15.jpg": require("./assets/15.jpg"),
-  "16.jpg": require("./assets/16.jpg"),
-};
+import Icon from "react-native-vector-icons/FontAwesome";
+import { useFocusEffect } from "@react-navigation/native";
 
 export function SavedView() {
-  const [memesList, setMemesList] = useState([]);
-  const [selectedPhoto, setSelectedPhoto] = useState(null);
+  const [memeList, setMemeList] = useState([]);
+  const [selectedMeme, setSelectedMeme] = useState(null);
 
-  useEffect(() => {
-    const loadPhotos = async () => {
-      try {
-        const storedPhotos = await AsyncStorage.getItem("memesList");
-        if (storedPhotos !== null) {
-          setMemesList(JSON.parse(storedPhotos));
-        } else {
-          const defaultPhotos = [
-            "01.jpg",
-            "02.jpg",
-            "03.jpg",
-            "04.jpg",
-            "05.jpg",
-            "06.jpg",
-            "07.jpg",
-            "08.jpg",
-            "09.jpg",
-            "10.jpg",
-            "11.jpg",
-            "12.jpg",
-            "13.jpg",
-            "14.jpg",
-            "15.jpg",
-            "16.jpg",
-          ];
-          setMemesList(defaultPhotos);
-          await AsyncStorage.setItem(
-            "memesList",
-            JSON.stringify(defaultPhotos)
-          );
-        }
-      } catch (error) {
-        console.error("Error loading photos:", error);
+  const loadMemes = async () => {
+    try {
+      const storedMemes = await AsyncStorage.getItem("memesList");
+      if (storedMemes !== null) {
+        setMemeList(JSON.parse(storedMemes));
       }
-    };
-
-    loadPhotos();
-  }, []);
-
-  useEffect(() => {
-    const savePhotos = async () => {
-      try {
-        await AsyncStorage.setItem("memesList", JSON.stringify(memesList));
-      } catch (error) {
-        console.error("Error saving photos:", error);
-      }
-    };
-
-    savePhotos();
-  }, [memesList]);
-
-  const deletePhoto = (imageName) => {
-    Alert.alert("Delete Photo", "Are you sure you want to delete this photo?", [
-      { text: "Cancel", style: "cancel" },
-      {
-        text: "Delete",
-        style: "destructive",
-        onPress: () => {
-          setMemesList((prevList) =>
-            prevList.filter((item) => item !== imageName)
-          );
-          if (selectedPhoto === imageName) {
-            setSelectedPhoto(null);
-          }
-          console.log(`Deleted image ${imageName}`);
-        },
-      },
-    ]);
+    } catch (error) {
+      console.error("Error loading memes:", error);
+    }
   };
 
-  const downloadPhoto = (imageName) => {
-    Alert.alert("Download", `Downloading image ${imageName}`);
-    console.log(`Download image ${imageName}`);
+  // Use useFocusEffect to reload the memes whenever the screen is focused
+  useFocusEffect(
+    useCallback(() => {
+      loadMemes(); // Load memes when screen comes into focus
+    }, [])
+  );
+
+  const deleteMeme = (meme) => {
+    if (window.confirm("Are you sure you want to delete this meme?")) {
+      const updatedList = memeList.filter((item) => item !== meme);
+      setMemeList(updatedList);
+      saveMemesToStorage(updatedList); // Call saveMemesToStorage here
+      if (selectedMeme === meme) {
+        setSelectedMeme(null);
+      }
+      console.log(`Deleted meme ${meme}`);
+    }
   };
 
-  const toggleSelectPhoto = (imageName) => {
-    setSelectedPhoto((prevSelected) =>
-      prevSelected === imageName ? null : imageName
-    );
+  const saveMemesToStorage = async (updatedList) => {
+    try {
+      await AsyncStorage.setItem("memesList", JSON.stringify(updatedList));
+    } catch (error) {
+      console.error("Error saving memes:", error);
+    }
+  };
+
+  const toggleSelectMeme = (meme) => {
+    setSelectedMeme((prevSelected) => (prevSelected === meme ? null : meme));
   };
 
   return (
     <LinearGradient
-      colors={["#00D9E1", "#133CE3", "#8D4EFA"]} // Gradient colors
+      colors={["#00D9E1", "#133CE3", "#8D4EFA"]}
       start={{ x: 0.3, y: 0 }}
       end={{ x: 0.7, y: 1 }}
       style={styles.container}
     >
       <ScrollView contentContainerStyle={styles.scrollContainer}>
-        {memesList.map((imageName, index) => (
+        {memeList.map((meme, index) => (
           <View key={index} style={styles.itemContainer}>
-            <TouchableOpacity onPress={() => toggleSelectPhoto(imageName)}>
-              <Image source={imageAssets[imageName]} style={styles.image} />
-              {selectedPhoto === imageName && (
+            <Pressable onPress={() => toggleSelectMeme(meme)}>
+              <Image source={{ uri: meme.url }} style={styles.image} />
+              {selectedMeme === meme && (
                 <View style={styles.overlay}>
-                  <TouchableOpacity
+                  <Pressable
                     style={styles.iconButton}
-                    onPress={() => deletePhoto(imageName)}
+                    onPress={() => deleteMeme(meme)}
                   >
                     <Icon name="trash" size={24} color="#fff" />
-                  </TouchableOpacity>
-                  <TouchableOpacity
+                  </Pressable>
+                  <Pressable
                     style={styles.iconButton}
-                    onPress={() => downloadPhoto(imageName)}
+                    onPress={() => downloadMeme(meme.url)}
                   >
                     <Icon name="download" size={24} color="#fff" />
-                  </TouchableOpacity>
+                  </Pressable>
                 </View>
               )}
-            </TouchableOpacity>
+            </Pressable>
           </View>
         ))}
       </ScrollView>
@@ -160,35 +94,36 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   scrollContainer: {
-    flexGrow: 1,
     flexDirection: "row",
     flexWrap: "wrap",
     justifyContent: "space-between",
+    padding: 10, // Add padding to create space on the sides
   },
   itemContainer: {
-    width: "150px",
+    width: "auto",
     marginBottom: 10,
     position: "relative",
     borderRadius: 10,
   },
   image: {
     height: 150,
-    width: "100%",
+    width: 150, // Set a fixed width of 150px
     borderRadius: 10,
   },
   overlay: {
     position: "absolute",
     top: 0,
     left: 0,
-    height: "100%",
-    width: "100%",
+    right: 0,
+    bottom: 0,
     backgroundColor: "rgba(0, 0, 0, 0.5)",
-    flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
+    flexDirection: "row",
+    borderRadius: 10,
   },
   iconButton: {
-    marginHorizontal: 20,
+    marginHorizontal: 10,
     padding: 10,
     backgroundColor: "rgba(255, 255, 255, 0.3)",
     borderRadius: 30,
