@@ -33,22 +33,16 @@ const imageAssets = {
 };
 
 export function SavedView() {
-  // State to hold the list of photos
-  const [photoList, setPhotoList] = useState([]);
-  // State to hold the currently selected photo
+  const [memesList, setMemesList] = useState([]);
   const [selectedPhoto, setSelectedPhoto] = useState(null);
 
-  // Load photo list from AsyncStorage or initialize with default images
   useEffect(() => {
     const loadPhotos = async () => {
       try {
-        // Retrieve stored photos from AsyncStorage
-        const storedPhotos = await AsyncStorage.getItem("photoList");
+        const storedPhotos = await AsyncStorage.getItem("memesList");
         if (storedPhotos !== null) {
-          // If photos exist in storage, parse and set them to state
-          setPhotoList(JSON.parse(storedPhotos));
+          setMemesList(JSON.parse(storedPhotos));
         } else {
-          // If no photos are stored, initialize with default images
           const defaultPhotos = [
             "01.jpg",
             "02.jpg",
@@ -67,10 +61,9 @@ export function SavedView() {
             "15.jpg",
             "16.jpg",
           ];
-          setPhotoList(defaultPhotos);
-          // Save the default photos to AsyncStorage for future use
+          setMemesList(defaultPhotos);
           await AsyncStorage.setItem(
-            "photoList",
+            "memesList",
             JSON.stringify(defaultPhotos)
           );
         }
@@ -80,36 +73,30 @@ export function SavedView() {
     };
 
     loadPhotos();
-  }, []); // Empty dependency array means this runs once when the component mounts
+  }, []);
 
-  // Save photo list to AsyncStorage whenever it changes
   useEffect(() => {
     const savePhotos = async () => {
       try {
-        // Save the current photoList to AsyncStorage
-        await AsyncStorage.setItem("photoList", JSON.stringify(photoList));
+        await AsyncStorage.setItem("memesList", JSON.stringify(memesList));
       } catch (error) {
         console.error("Error saving photos:", error);
       }
     };
 
     savePhotos();
-  }, [photoList]); // Dependency array includes photoList; runs whenever photoList changes
+  }, [memesList]);
 
-  // Function to delete a photo
   const deletePhoto = (imageName) => {
-    // Display a confirmation alert to the user
     Alert.alert("Delete Photo", "Are you sure you want to delete this photo?", [
       { text: "Cancel", style: "cancel" },
       {
         text: "Delete",
         style: "destructive",
         onPress: () => {
-          // Update the photo list by filtering out the deleted photo
-          setPhotoList((prevList) =>
+          setMemesList((prevList) =>
             prevList.filter((item) => item !== imageName)
           );
-          // Clear selected photo if it was the one deleted
           if (selectedPhoto === imageName) {
             setSelectedPhoto(null);
           }
@@ -119,20 +106,17 @@ export function SavedView() {
     ]);
   };
 
-  // Function to download a photo (placeholder implementation)
   const downloadPhoto = (imageName) => {
     Alert.alert("Download", `Downloading image ${imageName}`);
-    console.log(`Download image ${imageName}`); // Log the download action
+    console.log(`Download image ${imageName}`);
   };
 
-  // Function to toggle the selection of a photo
   const toggleSelectPhoto = (imageName) => {
-    setSelectedPhoto(
-      (prevSelected) => (prevSelected === imageName ? null : imageName) // Toggle selection
+    setSelectedPhoto((prevSelected) =>
+      prevSelected === imageName ? null : imageName
     );
   };
 
-  // Render the component
   return (
     <LinearGradient
       colors={["#00D9E1", "#133CE3", "#8D4EFA"]} // Gradient colors
@@ -140,8 +124,8 @@ export function SavedView() {
       end={{ x: 0.7, y: 1 }}
       style={styles.container}
     >
-      <ScrollView contentContainerStyle={styles.container}>
-        {photoList.map((imageName, index) => (
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
+        {memesList.map((imageName, index) => (
           <View key={index} style={styles.itemContainer}>
             <TouchableOpacity onPress={() => toggleSelectPhoto(imageName)}>
               <Image source={imageAssets[imageName]} style={styles.image} />
@@ -149,16 +133,15 @@ export function SavedView() {
                 <View style={styles.overlay}>
                   <TouchableOpacity
                     style={styles.iconButton}
-                    onPress={() => deletePhoto(imageName)} // Delete button
+                    onPress={() => deletePhoto(imageName)}
                   >
-                    <Icon name="trash" size={24} color="#fff" /> // Trash icon
+                    <Icon name="trash" size={24} color="#fff" />
                   </TouchableOpacity>
                   <TouchableOpacity
                     style={styles.iconButton}
-                    onPress={() => downloadPhoto(imageName)} // Download button
+                    onPress={() => downloadPhoto(imageName)}
                   >
-                    <Icon name="download" size={24} color="#fff" /> // Download
-                    icon
+                    <Icon name="download" size={24} color="#fff" />
                   </TouchableOpacity>
                 </View>
               )}
@@ -170,22 +153,23 @@ export function SavedView() {
   );
 }
 
-// Styles for the component
 const styles = StyleSheet.create({
   container: {
-    flexGrow: 1,
-    backgroundColor: "#fff",
-    padding: 20,
+    flex: 1,
+    padding: 10,
+    justifyContent: "space-between",
   },
-  itemContainer: {
+  scrollContainer: {
+    flexGrow: 1,
     flexDirection: "row",
     flexWrap: "wrap",
     justifyContent: "space-between",
   },
   itemContainer: {
-    width: "48%",
+    width: "150px",
     marginBottom: 10,
-    position: "relative", // Position relative to allow overlay positioning
+    position: "relative",
+    borderRadius: 10,
   },
   image: {
     height: 150,
@@ -198,15 +182,15 @@ const styles = StyleSheet.create({
     left: 0,
     height: "100%",
     width: "100%",
-    backgroundColor: "rgba(0, 0, 0, 0.5)", // Semi-transparent black background
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
   },
   iconButton: {
     marginHorizontal: 20,
-    padding: 10, // Add padding around buttons
-    backgroundColor: "rgba(255, 255, 255, 0.3)", // Semi-transparent white background
-    borderRadius: 30, // Rounded corners for buttons
+    padding: 10,
+    backgroundColor: "rgba(255, 255, 255, 0.3)",
+    borderRadius: 30,
   },
 });
