@@ -14,9 +14,14 @@ import { ScrollView } from "react-native";
 import { ApiHandler } from "./ApiHandler";
 import { LinearGradient } from "expo-linear-gradient";
 
+// Dummybild som används tillfälligt
 const localImage = require("./assets/Image20240927091254.png");
 
+// Skapar en array av dummybilden
+const dummyImageData = new Array(10).fill(localImage);
+
 export function GenerateView() {
+  // Hämtar data och fetchMemes() från ApiHandler
   const { data, fetchMemes } = ApiHandler();
   const [currentMeme, setCurrentMeme] = useState(null);
   const [texts, setTexts] = useState([]);
@@ -24,26 +29,39 @@ export function GenerateView() {
   const [memes, setMemes] = useState([]);
 
   useEffect(() => {
+    const fetchTextFieldCount = () => {
+      //Antalet hämtas från API anrop
+      const responseCount = 0;
+      // Uppdatera textFieldsCount med svaret
+      setTextFieldsCount(responseCount);
+      setTexts(Array(responseCount).fill(""));
+    };
+    fetchTextFieldCount();
     fetchMemes();
     getMemesFromAsyncStorage();
   }, []);
 
   const handleTextChange = (text, index) => {
+    // Kopia av textarrayen som skrivs i input
     const newTexts = [...texts];
+    // Uppdaterar texten i texts-arrayen på rätt index
     newTexts[index] = text;
+    // Uppdaterar state med den nya texts-arrayen.
     setTexts(newTexts);
   };
-
+  //Nollställer textArrayen vid discard
   const handleDiscard = () => {
     setTexts(Array(textFieldsCount).fill(""));
   };
 
   const saveMemeInAsyncStorage = async () => {
     const memeToSave = { url: currentMeme.url, texts: texts };
+    //create array with new meme
     const updatedMemes = [...memes, memeToSave];
     setMemes(updatedMemes);
 
     try {
+      //Put array in storage
       await AsyncStorage.setItem("memesList", JSON.stringify(updatedMemes));
       console.log("Meme Saved!");
       alert("Meme Saved!");
@@ -54,6 +72,7 @@ export function GenerateView() {
 
   const getMemesFromAsyncStorage = async () => {
     try {
+      //get array from storage
       const storedMemes = await AsyncStorage.getItem("memesList");
       if (storedMemes !== null) {
         setMemes(JSON.parse(storedMemes));
@@ -61,6 +80,8 @@ export function GenerateView() {
           "Retrieved memes from asyncStorage:",
           JSON.parse(storedMemes)
         );
+      } else {
+        console.log("Async Storage contains no memes");
       }
     } catch (error) {
       console.error("Error retrieving memes:", error);
@@ -79,7 +100,7 @@ export function GenerateView() {
 
   return (
     <LinearGradient
-      colors={["#00D9E1", "#133CE3", "#8D4EFA"]}
+      colors={["#00D9E1", "#133CE3", "#8D4EFA"]} // Gradient colors
       start={{ x: 0.3, y: 0 }}
       end={{ x: 0.7, y: 1 }}
       style={styles.container}
@@ -87,10 +108,14 @@ export function GenerateView() {
       <Text style={styles.titleTextStyle}> Generate Your Own Memes </Text>
 
       <View style={styles.memeContainer}>
+        {/* Sätter bild till den meme du klickar på. Finns ingen, väljs dummybild - JH */}
         <Image
           source={currentMeme ? { uri: currentMeme.url } : localImage}
           style={styles.imageStyle}
-        />
+        ></Image>
+
+        {/* Varje text som skrivs i inputs målas upp ovanpå memebilden, just nu bara på olika höjder av bilden.
+              Ska anpassas efter vilka kordinater som hämtas i APIn */}
         {texts.map((text, index) => (
           <Text
             key={index}
@@ -100,30 +125,34 @@ export function GenerateView() {
           </Text>
         ))}
       </View>
-
+      {/* Fick flytta ut denna och ändra till scrollView på rad 78 då renderingen inte fungerade på ios - JH */}
       <View>
         <Text style={styles.underTitleTextStyle}>Choose Your Meme</Text>
       </View>
 
       <ScrollView horizontal={true} style={styles.listStyle}>
-        {data ? (
-          data.map((item) => (
-            <Pressable
-              key={item.id}
-              onPress={() => {
-                setCurrentMeme(item), setTextFieldsCount(item.box_count);
-                setTexts(Array(item.box_count).fill(""));
-              }}
-            >
-              <Image source={{ uri: item.url }} style={styles.memeScroll} />
-            </Pressable>
-          ))
-        ) : (
-          <Text>Loading</Text>
-        )}
+        {
+          // Tillagd för att hämta memes från API - JH
+          data ? (
+            data.map((item) => (
+              <Pressable
+                key={item.id}
+                onPress={() => {
+                  setCurrentMeme(item), setTextFieldsCount(item.box_count);
+                  setTexts(Array(item.box_count).fill(""));
+                }}
+              >
+                <Image source={{ uri: item.url }} style={styles.memeScroll} />
+              </Pressable>
+            ))
+          ) : (
+            <Text>Loading</Text>
+          )
+        }
       </ScrollView>
 
       <ScrollView>
+        {/* Skapar visst antal textinputs baserat på värdet av textfieldCount, detta baseras också på APIns hämtning. */}
         {Array.from({ length: textFieldsCount }).map((_, index) => (
           <TextInput
             key={index}
