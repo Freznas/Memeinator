@@ -4,6 +4,7 @@ import { FlatList } from 'react-native';
 import { useState, useEffect} from 'react';
 import { ScrollView } from 'react-native';
 import { ApiHandler } from './ApiHandler'
+import {LinearGradient} from 'expo-linear-gradient';
 
 // Dummybild som används tillfälligt
 const localImage = require("./assets/Image20240927091254.png")
@@ -19,7 +20,7 @@ export function GenerateView(){
     const [texts, setTexts] = useState([])
     const [textFieldsCount, setTextFieldsCount] = useState(0);
 
-    
+    const [memes, setMemes] = useState([])
     useEffect(() =>{
         const fetchTextFieldCount = () => {
             //Antalet hämtas från API anrop
@@ -30,6 +31,7 @@ export function GenerateView(){
         }
         fetchTextFieldCount()
         fetchMemes()
+        getMemesFromAsyncStorage()
     },[]);
 
     const handleTextChange = (text, index) =>{
@@ -45,8 +47,53 @@ export function GenerateView(){
         setTexts(Array(textFieldsCount).fill(""))
     }
 
+    const saveMemeInAsyncStorage = async() =>{
+     
+    //create array with new meme
+    const updatedmemes = [...memes, currentMeme]
+    setMemes(updatedmemes)
+
+        try {
+            //Put array in storage
+            await AsyncStorage.setItem('memesList', JSON.stringify(updatedmemes));
+            console.log('Meme Saved!');
+            alert("Meme Saved!")
+        } catch (error) {
+            console.error('Error saving Meme:', error);
+        }
+    }
+  const  getMemesFromAsyncStorage= async() =>{
+          try {
+              //get array from storage
+              const storedMemes = await AsyncStorage.getItem('memesList');
+              if (storedMemes !== null) {
+                 setMemes(JSON.parse(storedMemes))
+                 console.log('Retrieved memes from asyncStorage:' + JSON.parse(storedMemes));
+              } else {
+                  console.log('Async Storage contains no memes');
+              }
+          } catch (error) {
+              console.error('Error retrieving memes:', error);
+          }
+  }
+  
+  const deleteAllMemes = async () =>
+  {
+          try {
+               await AsyncStorage.clear()
+              console.log("Deleted all memes")
+              setMemes([])
+           } catch (error) {
+                  console.error('Error clearing storage:', error);
+                }
+  }
     return(
-        <View style={[styles.container]}>
+        <LinearGradient
+            colors={['#00D9E1', '#133CE3', '#8D4EFA']} // Gradient colors
+            start={{x:0.3, y:0}}
+            end={{x:0.7, y:1}}
+            style={styles.container}
+        > 
 
             <Text style={styles.titleTextStyle}> Generate Your Own Memes </Text>
 
@@ -77,6 +124,9 @@ export function GenerateView(){
 
             
             <ScrollView horizontal={true} style={styles.listStyle}>
+
+
+
             {
                 // Tillagd för att hämta memes från API - JH
                 data ? (data.map(item => (<Pressable key={item.id} onPress={() => {setCurrentMeme(item),  setTextFieldsCount(item.box_count)}}><Image source={{ uri: item.url }} style={styles.memeScroll} /></Pressable>)))
@@ -85,7 +135,6 @@ export function GenerateView(){
             </ScrollView>
 
               <ScrollView>
-
                 {/* Skapar visst antal textinputs baserat på värdet av textfieldCount, detta baseras också på APIns hämtning. */}
               {Array.from({ length: textFieldsCount }).map((_, index) => (
                 <TextInput
@@ -98,28 +147,25 @@ export function GenerateView(){
             ))}
               </ScrollView>
 
-              <View style={styles.buttonContainer}>
+            <View style={styles.buttonContainer}>
+            
                 <Pressable style={styles.pressableStyle} 
-                onPress = { () => alert("Meme Saved!")}>
-                    <Text>Save</Text>
-                    </Pressable>
+                onPress = { () =>  deleteAllMemes()}>
+                <Text style={styles.buttonTextStyle}>Delete Storage</Text>
+                </Pressable>
+
                 <Pressable style={styles.pressableStyle} onPress={handleDiscard}>
-                    <Text>Discard</Text>
-                    </Pressable>
+                <Text style={styles.buttonTextStyle}>Discard</Text>
+                </Pressable>
 
-              </View>
-           
-                
+                <Pressable style={styles.pressableStyleSave} 
+                onPress = { () =>  saveMemeInAsyncStorage()}>
+                <Text style={styles.buttonTextStyle}>Save</Text>
+                </Pressable>
 
-
-        </View>
-
-
-
-
-    )
-
-
+            </View>
+        </LinearGradient>
+    );
 }
 
 const styles = StyleSheet.create({
@@ -131,39 +177,53 @@ const styles = StyleSheet.create({
         padding: 20,
         
     },
+    
     //Style för titeln
     titleTextStyle: {
-        marginTop: 20
+        marginTop: 60,
+        marginBottom: 10,
+        fontWeight: 'bold',
+        color: 'white',
+        fontSize: 25
     },
-    //Style för "choose your meme" text
+
+    //Style för "choose your meme" text <-- Do we need this text here? - Juhee
     underTitleTextStyle: {
-        marginTop: 20
+        marginTop: 20,
+        fontWeight: 'normal',
+        color: 'white',
+        fontSize: 18
     },
+
     //Style för den bild som visar den skapade memen med text
     imageStyle: {
         width: 250,
         height: 250,
         marginTop: 20, 
         borderWidth: 2,
-        borderColor: "black"
+        borderColor: "white"
     },
+
     //Style för bilder i listan där hämtade memes visas
     listImage : {
         width: 100, 
         height: 100,
         marginHorizontal: 20, 
     },
+
     //Style för själva listan
     listStyle: {
         marginTop: 20,
         maxHeight: 120 
     },
+
     //Style på container för att overlayText ska centreras med image
     memeContainer: {
         position: "relative",
         alignItems: "center",
     
     },
+
     //Style för texten ovanpå meme
     overlayText: {
         position: "absolute",
@@ -172,25 +232,25 @@ const styles = StyleSheet.create({
         backgroundColor: 'transparent',
         padding: 5,
         borderRadius: 5,
-        
     },
+
     //Style för inputfields
     textInput: {
-        width: "100%",
+        width: 350,
         padding: 10,
         marginTop: 10,
-        borderWidth: 1,
-        borderColor: "gray",
+        backgroundColor: 'white',
         borderRadius: 5,
     },
+
     //Style för buttonContainer
     buttonContainer: {
         flexDirection: "row",
-        width: "100%",
-        padding: 20,
+        width: '100%',
+        paddingTop: 10,
         justifyContent: "space-between"
-        
     },
+
     //Style för knappar
     pressableStyle: {
         flex: 1, 
@@ -198,16 +258,31 @@ const styles = StyleSheet.create({
         backgroundColor: "lightgray", 
         alignItems: "center", 
         padding: 10,
+        borderRadius: 5
     },
+
+    pressableStyleSave: {
+        flex: 1, 
+        margin: 10, 
+        backgroundColor: "#FFCF23", 
+        alignItems: "center", 
+        padding: 10,
+        borderRadius: 5
+    },
+
+    buttonTextStyle: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        textAlign: 'center'
+    },
+
     memeScroll: {
-        margin: 20,
-        borderColor: 'black',
-        borderRadius: 5,
-        borderWidth: 5,
-        width: 100,
-        height: 100,
+        margin: 10,
+        marginBottom: 40,
+        width: 70,
+        height: 70,
         alignItems: 'center',
         justifyContent: 'center',
+        backgroundColor: 'white'
     }
-    
 })

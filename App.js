@@ -15,21 +15,17 @@ export default function App() {
   return (
     <NavigationContainer>
       <Tab.Navigator>
-        <Tab.Screen 
-        
-          name="Generate" 
+        <Tab.Screen
+          name="Generate"
           component={GenerateView}
           options={{ headerShown: false }} // Hides the header for the "Generate"View
         />
-        <Tab.Screen 
-          name="Saved" 
-          component={SavedView} 
+        <Tab.Screen
+          name="Saved"
+          component={SavedView}
           options={{ headerShown: false }} // Hides the header for the "Saved"View
         />
       </Tab.Navigator>
     </NavigationContainer>
-    
- 
   );
 }
-
