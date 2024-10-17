@@ -24,7 +24,7 @@ export function GenerateView(){
     useEffect(() =>{
         const fetchTextFieldCount = () => {
             //Antalet hämtas från API anrop
-            const responseCount = 4;
+            const responseCount = 0
              // Uppdatera textFieldsCount med svaret
             setTextFieldsCount(responseCount)
             setTexts(Array(responseCount).fill(""));
@@ -122,12 +122,16 @@ export function GenerateView(){
             <Text style={styles.underTitleTextStyle}>Choose Your Meme</Text>
             </View>
 
-            <ScrollView horizontal>
+            
+            <ScrollView horizontal={true} style={styles.listStyle}>
+
+
+
             {
                 // Tillagd för att hämta memes från API - JH
-                data ? (data.map(item => (<Pressable key={item.id} onPress={() => setCurrentMeme(item)}><Image source={{ uri: item.url }} style={styles.memeScroll} /></Pressable>)))
+                data ? (data.map(item => (<Pressable key={item.id} onPress={() => {setCurrentMeme(item),  setTextFieldsCount(item.box_count)}}><Image source={{ uri: item.url }} style={styles.memeScroll} /></Pressable>)))
                 : (<Text>Loading</Text>)
-            }
+            }          
             </ScrollView>
 
               <ScrollView>
