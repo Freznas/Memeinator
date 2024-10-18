@@ -59,7 +59,7 @@ export function GenerateView(){
         setCurrentMeme(null)
         setImageSource(localImage)
         setShowTextInput(false)
-        
+    }
 
 
   const saveMemeInAsyncStorage = async () => {
@@ -194,9 +194,9 @@ export function GenerateView(){
             </View>
         </LinearGradient>
     );
+    }
 
 
-}
 
 const styles = StyleSheet.create({
   //Style för hela skärmen
@@ -243,8 +243,8 @@ const styles = StyleSheet.create({
   //Style för själva listan
   listStyle: {
     marginTop: 20,
-    maxHeight: 120,
-    maxWidth: 120,
+    maxHeight: 100,
+    maxWidth: 350,
   },
 
   //Style på container för att overlayText ska centreras med image
