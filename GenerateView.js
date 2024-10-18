@@ -13,12 +13,15 @@ import { useState, useEffect } from "react";
 import { ScrollView } from "react-native";
 import { ApiHandler } from "./ApiHandler";
 import { LinearGradient } from "expo-linear-gradient";
+import { DiscardButtonAnimation } from "./ButtonAnimation";
 
 // Dummybild som används tillfälligt
 const localImage = require("./assets/Image20240927091254.png");
 
 // Skapar en array av dummybilden
 const dummyImageData = new Array(10).fill(localImage);
+
+
 
 
 export function GenerateView(){
@@ -109,6 +112,8 @@ export function GenerateView(){
                   console.error('Error clearing storage:', error);
                 }
   }
+
+  
     return(
         <LinearGradient
             colors={['#00D9E1', '#133CE3', '#8D4EFA']} // Gradient colors
@@ -184,9 +189,12 @@ export function GenerateView(){
                 <Text style={styles.buttonTextStyle}>Delete Storage</Text>
                 </Pressable>
 
-                <Pressable style={styles.pressableStyle} onPress={handleDiscard}>
-                <Text style={styles.buttonTextStyle}>Discard</Text>
-                </Pressable>
+                <DiscardButtonAnimation 
+                onPress={handleDiscard} 
+                buttonText="Discard" 
+                buttonStyle={styles.pressableStyle} 
+                textStyle={styles.buttonTextStyle} 
+                />
 
                 <Pressable style={styles.pressableStyleSave} 
                 onPress = { () =>  saveMemeInAsyncStorage()}>
