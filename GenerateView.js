@@ -13,6 +13,7 @@ import { useState, useEffect } from "react";
 import { ScrollView } from "react-native";
 import { ApiHandler } from "./ApiHandler";
 import { LinearGradient } from "expo-linear-gradient";
+import { MovableView } from "./MovableView";
 
 // Dummybild som används tillfälligt
 const localImage = require("./assets/Image20240927091254.png");
@@ -131,11 +132,10 @@ export function GenerateView(){
 
             {/* Varje text som skrivs i inputs målas upp ovanpå memebilden, just nu bara på olika höjder av bilden.
             Ska anpassas efter vilka kordinater som hämtas i APIn */}
-            {texts.map((text, index ) => (
-                <Text key={index} style={[styles.overlayText, { top: 100 + index * 40 }]}>
-                    {text}
-                </Text>
-
+            {texts.map((text, index ) => ( 
+              <MovableView key={index}
+              startingX={0} startingY={-200} 
+              style={[styles.overlayText, { top: 100 + index * 40 }]}  setEnteredText={text}/>
 
             ))}
             </View>
