@@ -111,6 +111,7 @@ export function GenerateView(){
                     ?  { uri: currentMeme.url }
                     : imageSource} 
                 style={styles.imageStyle} 
+                resizeMode='contain'
             ></Image>
 
             {/* Varje text som skrivs i inputs målas upp ovanpå memebilden, just nu bara på olika höjder av bilden.
@@ -209,11 +210,10 @@ const styles = StyleSheet.create({
 
     //Style för den bild som visar den skapade memen med text
     imageStyle: {
-        width: 250,
-        height: 250,
+        width: 350,
+        height: 300,
         marginTop: 20, 
-        borderWidth: 2,
-        borderColor: "white"
+       
     },
 
     //Style för bilder i listan där hämtade memes visas
