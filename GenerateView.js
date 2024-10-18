@@ -228,11 +228,9 @@ const styles = StyleSheet.create({
 
     //Style för den bild som visar den skapade memen med text
     imageStyle: {
-        width: 250,
-        height: 250,
-        marginTop: 20, 
-        borderWidth: 2,
-        borderColor: "white"
+        width: 350,
+        height: 350,
+       
     },
 
   //Style för bilder i listan där hämtade memes visas
