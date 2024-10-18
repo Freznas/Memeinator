@@ -155,6 +155,7 @@ export function GenerateView(){
                     onPress={() => {
                     setCurrentMeme(item); 
                     setTextFieldsCount(item.box_count)
+                    setTexts(Array(item.box_count).fill(""))
                     setShowTextInput(true);}}>
                     <Image source={{ uri: item.url }} style={styles.memeScroll} />
                     </Pressable>)}
