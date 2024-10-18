@@ -1,16 +1,25 @@
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import { View, Text, Button, StyleSheet, Image, TextInput, Pressable} from "react-native";
-import { FlatList } from 'react-native';
-import { useState, useEffect} from 'react';
-import { ScrollView } from 'react-native';
-import { ApiHandler } from './ApiHandler'
-import {LinearGradient} from 'expo-linear-gradient';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import {
+  View,
+  Text,
+  Button,
+  StyleSheet,
+  Image,
+  TextInput,
+  Pressable,
+} from "react-native";
+import { FlatList } from "react-native";
+import { useState, useEffect } from "react";
+import { ScrollView } from "react-native";
+import { ApiHandler } from "./ApiHandler";
+import { LinearGradient } from "expo-linear-gradient";
 
 // Dummybild som används tillfälligt
-const localImage = require("./assets/Image20240927091254.png")
+const localImage = require("./assets/Image20240927091254.png");
 
 // Skapar en array av dummybilden
 const dummyImageData = new Array(10).fill(localImage);
+
 
 export function GenerateView(){
     // Hämtar data och fetchMemes() från ApiHandler
@@ -50,38 +59,45 @@ export function GenerateView(){
         setCurrentMeme(null)
         setImageSource(localImage)
         setShowTextInput(false)
-        
     }
 
-    const saveMemeInAsyncStorage = async() =>{
-     
+
+  const saveMemeInAsyncStorage = async () => {
+    const memeToSave = { url: currentMeme.url, texts: texts };
     //create array with new meme
-    const updatedmemes = [...memes, currentMeme]
-    setMemes(updatedmemes)
+    const updatedMemes = [...memes, memeToSave];
+    setMemes(updatedMemes);
 
-        try {
-            //Put array in storage
-            await AsyncStorage.setItem('memesList', JSON.stringify(updatedmemes));
-            console.log('Meme Saved!');
-            alert("Meme Saved!")
-        } catch (error) {
-            console.error('Error saving Meme:', error);
-        }
+    try {
+      //Put array in storage
+      await AsyncStorage.setItem("memesList", JSON.stringify(updatedMemes));
+      console.log("Meme Saved!");
+      alert("Meme Saved!");
+    } catch (error) {
+      console.error("Error saving Meme:", error);
     }
-  const  getMemesFromAsyncStorage= async() =>{
-          try {
-              //get array from storage
-              const storedMemes = await AsyncStorage.getItem('memesList');
-              if (storedMemes !== null) {
-                 setMemes(JSON.parse(storedMemes))
-                 console.log('Retrieved memes from asyncStorage:' + JSON.parse(storedMemes));
-              } else {
-                  console.log('Async Storage contains no memes');
-              }
-          } catch (error) {
-              console.error('Error retrieving memes:', error);
-          }
-  }
+  };
+
+  const getMemesFromAsyncStorage = async () => {
+    try {
+      //get array from storage
+      const storedMemes = await AsyncStorage.getItem("memesList");
+      if (storedMemes !== null) {
+        setMemes(JSON.parse(storedMemes));
+        console.log(
+          "Retrieved memes from asyncStorage:",
+          JSON.parse(storedMemes)
+        );
+      } else {
+        console.log("Async Storage contains no memes");
+      }
+    } catch (error) {
+      console.error("Error retrieving memes:", error);
+
+    }
+  };
+
+ 
   
   const deleteAllMemes = async () =>
   {
@@ -179,7 +195,9 @@ export function GenerateView(){
             </View>
         </LinearGradient>
     );
-}
+    }
+
+
 
 const styles = StyleSheet.create({
     //Style för hela skärmen
@@ -210,91 +228,92 @@ const styles = StyleSheet.create({
 
     //Style för den bild som visar den skapade memen med text
     imageStyle: {
-        width: 350,
-        height: 300,
+        width: 250,
+        height: 250,
         marginTop: 20, 
-       
+        borderWidth: 2,
+        borderColor: "white"
     },
 
-    //Style för bilder i listan där hämtade memes visas
-    listImage : {
-        width: 100, 
-        height: 100,
-        marginHorizontal: 20, 
-    },
+  //Style för bilder i listan där hämtade memes visas
+  listImage: {
+    width: 100,
+    height: 100,
+    marginHorizontal: 20,
+  },
 
-    //Style för själva listan
-    listStyle: {
-        marginTop: 20,
-        maxHeight: 120 
-    },
+  //Style för själva listan
+  listStyle: {
+    marginTop: 20,
+    maxHeight: 100,
+    maxWidth: 350,
+  },
 
-    //Style på container för att overlayText ska centreras med image
-    memeContainer: {
-        position: "relative",
-        alignItems: "center",
-    
-    },
+  //Style på container för att overlayText ska centreras med image
+  memeContainer: {
+    position: "relative",
+    alignItems: "center",
+  },
 
-    //Style för texten ovanpå meme
-    overlayText: {
-        position: "absolute",
-        color: "black",
-        fontSize: 25,
-        backgroundColor: 'transparent',
-        padding: 5,
-        borderRadius: 5,
-    },
+  //Style för texten ovanpå meme
+  overlayText: {
+    position: "absolute",
+    color: "black",
+    fontSize: 25,
+    backgroundColor: "transparent",
+    padding: 5,
+    borderRadius: 5,
+  },
 
-    //Style för inputfields
-    textInput: {
-        width: 350,
-        padding: 10,
-        marginTop: 10,
-        backgroundColor: 'white',
-        borderRadius: 5,
-    },
+  //Style för inputfields
+  textInput: {
+    width: 350,
+    padding: 10,
+    marginTop: 10,
+    backgroundColor: "white",
+    borderRadius: 5,
+  },
 
-    //Style för buttonContainer
-    buttonContainer: {
-        flexDirection: "row",
-        width: '100%',
-        paddingTop: 10,
-        justifyContent: "space-between"
-    },
+  //Style för buttonContainer
+  buttonContainer: {
+    flexDirection: "row",
+    width: "100%",
+    paddingTop: 10,
+    justifyContent: "space-between",
+  },
 
-    //Style för knappar
-    pressableStyle: {
-        flex: 1, 
-        margin: 10, 
-        backgroundColor: "lightgray", 
-        alignItems: "center", 
-        padding: 10,
-        borderRadius: 5
-    },
+  //Style för knappar
+  pressableStyle: {
+    flex: 1,
+    margin: 10,
+    backgroundColor: "lightgray",
+    alignItems: "center",
+    padding: 10,
+    borderRadius: 5,
+  },
 
-    pressableStyleSave: {
-        flex: 1, 
-        margin: 10, 
-        backgroundColor: "#FFCF23", 
-        alignItems: "center", 
-        padding: 10,
-        borderRadius: 5
-    },
+  pressableStyleSave: {
+    flex: 1,
+    margin: 10,
+    backgroundColor: "#FFCF23",
+    alignItems: "center",
+    padding: 10,
+    borderRadius: 5,
+  },
 
-    buttonTextStyle: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        textAlign: 'center'
-    },
+  buttonTextStyle: {
+    fontSize: 16,
+    fontWeight: "bold",
+    textAlign: "center",
+  },
 
-    memeScroll: {
-        margin: 10,
-        marginBottom: 40,
-        width: 70,
-        height: 70,
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: 'white'
-    }
-})
+  memeScroll: {
+    margin: 10,
+    marginBottom: 40,
+    width: 70,
+    height: 70,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "white",
+  },
+});
