@@ -1,16 +1,23 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { View, Image, Pressable, StyleSheet, ScrollView } from "react-native";
+import {
+  View,
+  Image,
+  Pressable,
+  StyleSheet,
+  ScrollView,
+  Alert,
+  Platform,
+} from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { useFocusEffect } from "@react-navigation/native";
-import { Alert, Platform } from "react-native";
 
 export function SavedView() {
   const [memeList, setMemeList] = useState([]);
   const [selectedMeme, setSelectedMeme] = useState(null);
 
-  // A function to load existing meme
+  // A function to load existing memes
   const loadMemes = async () => {
     try {
       const storedMemes = await AsyncStorage.getItem("memesList");
@@ -29,6 +36,7 @@ export function SavedView() {
     }, [])
   );
 
+  // Modified delete function to delete meme by its unique id
   const deleteMeme = (meme) => {
     if (Platform.OS === "ios") {
       // Use Alert for iOS
@@ -38,7 +46,7 @@ export function SavedView() {
           text: "Delete",
           style: "destructive",
           onPress: () => {
-            const updatedList = memeList.filter((item) => item !== meme);
+            const updatedList = memeList.filter((item) => item.id !== meme.id);
             setMemeList(updatedList);
             saveMemesToStorage(updatedList); // Save updated meme list to storage
             if (selectedMeme === meme) {
@@ -51,7 +59,7 @@ export function SavedView() {
     } else {
       // Use window.confirm for other platforms (Android, Web)
       if (window.confirm("Are you sure you want to delete this meme?")) {
-        const updatedList = memeList.filter((item) => item !== meme);
+        const updatedList = memeList.filter((item) => item.id !== meme.id);
         setMemeList(updatedList);
         saveMemesToStorage(updatedList); // Save updated meme list to storage
         if (selectedMeme === meme) {
@@ -69,6 +77,7 @@ export function SavedView() {
       console.error("Error saving memes:", error);
     }
   };
+
   // select a meme
   const toggleSelectMeme = (meme) => {
     setSelectedMeme((prevSelected) => (prevSelected === meme ? null : meme));
