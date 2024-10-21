@@ -15,12 +15,12 @@ export default function App() {
     <NavigationContainer>
       <Tab.Navigator>
         <Tab.Screen
-          name="Generate"
+          name="Generator"
           component={GenerateView}
           options={{ headerShown: false }} // Döljer Headern för "GenerateView" -JB
         />
         <Tab.Screen
-          name="Saved"
+          name="Your memes"
           component={SavedView}
           options={{ headerShown: false }} // Döljer Headern för "SavedView" -JB
         />
