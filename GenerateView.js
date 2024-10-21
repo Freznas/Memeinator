@@ -19,11 +19,7 @@ import { DiscardButtonAnimation } from "./ButtonAnimation";
 import Slider from '@react-native-community/slider'; // Vi måste importera denna för vi måste ska kunna dölja den
 import { ColorPicker } from 'react-native-color-picker';
 // Dummybild som används tillfälligt
-const localImage = require("./assets/Image20240927091254.png");
-
-
-// Detta blev loggan då
-const localImage = require("./assets/memeinator.png")
+const localImage = require("./assets/memeinator.png");
 
 // Skapar en array av dummybilden (behövs?)
 const dummyImageData = new Array(10).fill(localImage);
@@ -134,158 +130,130 @@ const [colors, setColors] = useState([]);
   };
 
 
-    return(
+  return (
+    <LinearGradient
+        colors={['#00D9E1', '#133CE3', '#8D4EFA']} // Gradient colors
+        start={{ x: 0.3, y: 0 }}
+        end={{ x: 0.7, y: 1 }}
+        style={styles.container}
+    >
+        <Text style={styles.titleTextStyle}> Generate Your Own Memes </Text>
 
-        <LinearGradient
-            colors={['#00D9E1', '#133CE3', '#8D4EFA']} // Gradient colors
-            start={{ x: 0.3, y: 0 }}
-            end={{ x: 0.7, y: 1 }}
-            style={styles.container}
-        >
-
-            <Text style={styles.titleTextStyle}> Generate Your Own Memes </Text>
-
-            <View style={styles.memeContainer}>
-            
+        <View style={styles.memeContainer}>
             {/* Sätter bild till den meme du klickar på. Finns ingen, väljs dummybild - JH */}
-            <Image 
-                source={currentMeme
-                    ?  { uri: currentMeme.url }
-                    : imageSource} 
-                style={styles.imageStyle} 
-                resizeMode='contain'
-            ></Image>
+            <Image
+                source={currentMeme ? { uri: currentMeme.url } : imageSource}
+                style={styles.imageStyle}
+                resizeMode="contain"
+            />
 
             {/* Varje text som skrivs i inputs målas upp ovanpå memebilden, just nu bara på olika höjder av bilden.
             Ska anpassas efter vilka kordinater som hämtas i APIn */}
-                {texts.map((text, index) => (
-                    <Text key={index} style={[styles.overlayText, { top: 100 + index * 40, color: colors[index] }]}>
-                        {text}
-                    </Text>
-
-
-                ))}
-            </View>
-            {/* Fick flytta ut denna och ändra till scrollView på rad 78 då renderingen inte fungerade på ios - JH */}
-            <View>
-                <Text style={styles.underTitleTextStyle}>Choose Your Meme</Text>
-            </View>
-
-
-            
-            <FlatList
-                data={data} 
-                horizontal={true} 
-                keyExtractor={item => item.id.toString()} 
-                renderItem={({ item }) => (
-                    <Pressable 
-                    onPress={() => {
-                    setCurrentMeme(item); 
-                    setTextFieldsCount(item.box_count)
-                    setTexts(Array(item.box_count).fill(""))
-                    setShowTextInput(true);}}>
-                    <Image source={{ uri: item.url }} style={styles.memeScroll} />
-                    </Pressable>)}
-                ListEmptyComponent={<Text>Loading...</Text>} 
-                style={styles.listStyle}
-            ></FlatList>
-
-              <ScrollView>
-                {/* Skapar visst antal textinputs baserat på värdet av textfieldCount, detta baseras också på APIns hämtning. */}
-            
-              {showTextInput && Array.from({ length: textFieldsCount }).map((_, index) => (
-              <View key={index} style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10 }}>
-                <TextInput
-                    key={index}
-                    style={[styles.textInput, { color: colors[index] }]}
-                    placeholder={`Enter text ${index + 1}`}
-                    value={texts[index]} 
-                    onChangeText={(text) => handleTextChange(text, index)}
-                />
+            {texts.map((text, index) => (
+                <Text key={index} style={[styles.overlayText, { top: 100 + index * 40, color: colors[index] }]}>
+                    {text}
+                </Text>
             ))}
-                   <LinearGradient
-                                colors={['#f43b47', '#0ba360']}
-                                style={styles.colorButtonGradient}>
-                                <Pressable style={styles.colorPickButton} onPress={() => openColorPicker(index)}>
-                                    <Text></Text>
-                                </Pressable>
-                            </LinearGradient>
+        </View>
 
-                        </View>
-                    ))}
+        {/* Fick flytta ut denna och ändra till scrollView på rad 78 då renderingen inte fungerade på ios - JH */}
+        <View>
+            <Text style={styles.underTitleTextStyle}>Choose Your Meme</Text>
+        </View>
 
-                    {isColorPickerVisible && (
-                        <Modal transparent={true}
-                            visible={isColorPickerVisible}
-                            animationType="slide">
-                            <View style={styles.modalContainer}>
-                                <View style={styles.colorPickerContainer}>
-                                    <ColorPicker
-                                        onColorSelected={(colors) => {
-                                            handleColorChange(colors, selectedIndex);
-                                            closeColorPicker();
-
-
-                                        }}
-                                        style={{ flex: 1 }}
-                                        sliderComponent={DummySlider} //Lägg in den osynliga dummy slidern så colorPicker inte gnäller!
-
-
-                                    />
-                                    <View style={styles.buttonsContainer}>
-                                        <Pressable style={styles.colorButton} onPress={() => handleColorChange('#000000', selectedIndex)}>
-                                            <Text style={styles.colorButtonText}>Black</Text>
-                                        </Pressable>
-                                        <Pressable style={styles.colorButton} onPress={() => handleColorChange('#FFFFFF', selectedIndex)}>
-                                            <Text style={styles.colorButtonText}>White</Text>
-                                        </Pressable>
-                                    </View>
-            
-              </ScrollView>
-              
-              
-
-
-                                    <Pressable
-                                        style={styles.closeButton}
-                                        onPress={closeColorPicker}>
-                                        <Text style={styles.closeButtonText}>close</Text>
-                                    </Pressable>
-
-                                </View>
-
-                            </View>
-
-
-                        </Modal>
-                    )}
-
-
-
-                </ScrollView>
-            </View>
-            <View style={styles.buttonContainer}>
-
-                    
-                <DiscardButtonAnimation 
-                onPress={handleDiscard} 
-                buttonText="Discard" 
-                buttonStyle={styles.pressableStyle} 
-                textStyle={styles.buttonTextStyle} 
-                />
-
-
-                <Pressable style={styles.pressableStyleSave}
-                    onPress={() => saveMemeInAsyncStorage()}>
-                    <Text style={styles.buttonTextStyle}>Save</Text>
+        <FlatList
+            data={data}
+            horizontal={true}
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={({ item }) => (
+                <Pressable
+                    onPress={() => {
+                        setCurrentMeme(item);
+                        setTextFieldsCount(item.box_count);
+                        setTexts(Array(item.box_count).fill(""));
+                        setShowTextInput(true);
+                    }}
+                >
+                    <Image source={{ uri: item.url }} style={styles.memeScroll} />
                 </Pressable>
+            )}
+            ListEmptyComponent={<Text>Loading...</Text>}
+            style={styles.listStyle}
+        />
 
-            </View>
-        </LinearGradient>
-    );
+        <ScrollView>
+            {/* Skapar visst antal textinputs baserat på värdet av textfieldCount, detta baseras också på APIns hämtning. */}
+            {showTextInput &&
+                Array.from({ length: textFieldsCount }).map((_, index) => (
+                    <View key={index} style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10 }}>
+                        <TextInput
+                            style={[styles.textInput, { color: colors[index] }]}
+                            placeholder={`Enter text ${index + 1}`}
+                            value={texts[index]}
+                            onChangeText={(text) => handleTextChange(text, index)}
+                        />
+                        <LinearGradient
+                            colors={['#f43b47', '#0ba360']}
+                            style={styles.colorButtonGradient}
+                        >
+                            <Pressable style={styles.colorPickButton} onPress={() => openColorPicker(index)}>
+                                <Text></Text>
+                            </Pressable>
+                        </LinearGradient>
+                    </View>
+                ))}
+        </ScrollView>
 
-    }
-  };
+        {isColorPickerVisible && (
+            <Modal transparent={true} visible={isColorPickerVisible} animationType="slide">
+                <View style={styles.modalContainer}>
+                    <View style={styles.colorPickerContainer}>
+                        <ColorPicker
+                            onColorSelected={(colors) => {
+                                handleColorChange(colors, selectedIndex);
+                                closeColorPicker();
+                            }}
+                            style={{ flex: 1 }}
+                            sliderComponent={DummySlider} //Lägg in den osynliga dummy slidern så colorPicker inte gnäller!
+                        />
+                        <View style={styles.buttonsContainer}>
+                            <Pressable
+                                style={styles.colorButton}
+                                onPress={() => handleColorChange('#000000', selectedIndex)}
+                            >
+                                <Text style={styles.colorButtonText}>Black</Text>
+                            </Pressable>
+                            <Pressable
+                                style={styles.colorButton}
+                                onPress={() => handleColorChange('#FFFFFF', selectedIndex)}
+                            >
+                                <Text style={styles.colorButtonText}>White</Text>
+                            </Pressable>
+                        </View>
+                    </View>
+
+                    <Pressable style={styles.closeButton} onPress={closeColorPicker}>
+                        <Text style={styles.closeButtonText}>Close</Text>
+                    </Pressable>
+                </View>
+            </Modal>
+        )}
+
+        <View style={styles.buttonContainer}>
+            <DiscardButtonAnimation
+                onPress={handleDiscard}
+                buttonText="Discard"
+                buttonStyle={styles.pressableStyle}
+                textStyle={styles.buttonTextStyle}
+            />
+
+            <Pressable style={styles.pressableStyleSave} onPress={() => saveMemeInAsyncStorage()}>
+                <Text style={styles.buttonTextStyle}>Save</Text>
+            </Pressable>
+        </View>
+    </LinearGradient>
+);
+}
 
 
 const styles = StyleSheet.create({
