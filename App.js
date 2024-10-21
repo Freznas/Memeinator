@@ -1,4 +1,3 @@
-//Import dependencies & modules from react/react-native
 import * as React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -7,7 +6,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { GenerateView } from './GenerateView'; // Importera GenerateView
 import { SavedView } from './SavedView';       // Importera SavedView
 
-//Create tab navigator instance
+//Skapa instans av bottomTabnavigator
 const Tab = createBottomTabNavigator();
 
 export default function App() {
@@ -18,12 +17,12 @@ export default function App() {
         <Tab.Screen
           name="Generate"
           component={GenerateView}
-          options={{ headerShown: false }} // Hides the header for the "Generate"View
+          options={{ headerShown: false }} // Döljer Headern för "GenerateView" -JB
         />
         <Tab.Screen
           name="Saved"
           component={SavedView}
-          options={{ headerShown: false }} // Hides the header for the "Saved"View
+          options={{ headerShown: false }} // Döljer Headern för "SavedView" -JB
         />
       </Tab.Navigator>
     </NavigationContainer>
