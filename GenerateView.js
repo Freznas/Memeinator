@@ -135,10 +135,10 @@ export function GenerateView(){
             {/* Varje text som skrivs i inputs målas upp ovanpå memebilden, just nu bara på olika höjder av bilden.
             Ska anpassas efter vilka kordinater som hämtas i APIn */}
             {texts.map((text, index ) => ( 
-              <MovableView key={index}
-              simultaneousHandlers={svRef}
-              startingX={0} startingY={-200 + index*40} 
-              style={styles.overlayText}  setEnteredText={text}/>
+
+              <MovableView key={index} style={ styles.overlayText }
+              startingX={ 0 } startingY={ 50 + index * 40 }
+              enteredText={text} />
 
             ))}
             </View>
