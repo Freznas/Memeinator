@@ -1,7 +1,7 @@
 
 //Import dependencies & modules from react/react-native
 import * as React from "react";
-import { NavigationContainer } from "@react-navigation/native";
+import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 //Import local modules
 import { GenerateView } from "./GenerateView"; // Importera GenerateView
@@ -10,10 +10,26 @@ import { SavedView } from "./SavedView"; // Importera SavedView
 
 const Tab = createBottomTabNavigator();
 
+const MyTheme = {
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    primary: 'black',
+  },
+};
+
 export default function App() {
   return (
-    <NavigationContainer>
-      <Tab.Navigator>
+    <NavigationContainer theme={MyTheme}>
+      <Tab.Navigator
+        screenOptions={{
+          tapBarActiveTintColor: MyTheme.colors.primary,
+          tapBarInactiveTintColor: 'gray',
+          tabBarStyle: {
+            backgroundColor: '#C6F5FF',
+          },
+          }}
+      >
         <Tab.Screen
           name="Generator"
           component={GenerateView}
