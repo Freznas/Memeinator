@@ -134,8 +134,8 @@ export function GenerateView(){
             Ska anpassas efter vilka kordinater som hämtas i APIn */}
             {texts.map((text, index ) => ( 
               <MovableView key={index}
-              startingX={0} startingY={-200} 
-              style={[styles.overlayText, { top: 100 + index * 40 }]}  setEnteredText={text}/>
+              startingX={0} startingY={-200 + index*40} 
+              style={styles.overlayText}  setEnteredText={text}/>
 
             ))}
             </View>

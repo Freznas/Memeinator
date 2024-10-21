@@ -1,11 +1,11 @@
 import React, { useRef } from 'react';
-import { Text, Animated } from 'react-native';
+import { Text, Animated, StyleSheet} from 'react-native';
 import { useState } from 'react';
-import { PanGestureHandler, GestureHandlerRootView, TextInput } from 'react-native-gesture-handler';
+import { PanGestureHandler, GestureHandlerRootView } from 'react-native-gesture-handler';
 
 // npm install react-native-gesture-handler
 
-export function MovableView({ setEnteredText, startingX, startingY } ) {
+export function MovableView({ setEnteredText, startingX, startingY }) {
 
     // Förflyttningarna i variabler om texten förflyttas 50 i X så är distanceX = 50 (längden på förflyttningssträckan)
     // useRef används istället för state då detta värde inte omrenderas vid ändring av det.
@@ -14,8 +14,8 @@ export function MovableView({ setEnteredText, startingX, startingY } ) {
     const distanceY = useRef(new Animated.Value(0)).current;
 
     // Utgångspositionen på texten
-   /*  const startingX = 0;
-    const startingY = 0; */
+    /*  const startingX = 0;
+     const startingY = 0; */
 
     // Senaste positionen - från början 0 eftersom vi inte har en senaste position
     const lastPosition = useRef({ x: 0, y: 0 }).current;
@@ -30,7 +30,7 @@ export function MovableView({ setEnteredText, startingX, startingY } ) {
 
     function stateChangeHandler(event) {
         // 5 i detta fall representerar slutet av statet - alltså när du väl släpper musen i den nya positionen.
-        if (event.nativeEvent.state === 5) {  
+        if (event.nativeEvent.state === 5) {
             // Spara den nya positionen i den senaste positionen
             lastPosition.x += event.nativeEvent.translationX;
             lastPosition.y += event.nativeEvent.translationY;
@@ -44,14 +44,14 @@ export function MovableView({ setEnteredText, startingX, startingY } ) {
         }
     };
 
- 
+
 
     return (
-        <GestureHandlerRootView style={{backgroundColor: 'transparent'}}>
-           {/*  <TextInput placeholder='input' onChangeText={textInputHandler} multiline={true} ></TextInput> */}
+        <GestureHandlerRootView style={{ backgroundColor: 'transparent' }}>
+            {/*  <TextInput placeholder='input' onChangeText={textInputHandler} multiline={true} ></TextInput> */}
             <PanGestureHandler onGestureEvent={gestureEvent} onHandlerStateChange={stateChangeHandler}>
                 <Animated.View
-                    style={{
+                    style={[styles.movableContainer, {
                         // Animering av förflyttning.
                         // Animated har en inbyggd add()-funktion som adderar positionerna. Så den nya är ursprungliga + förflyttningen
                         transform: [
@@ -59,13 +59,24 @@ export function MovableView({ setEnteredText, startingX, startingY } ) {
                             { translateX: Animated.add(distanceX, startingX) },
                             { translateY: Animated.add(distanceY, startingY) },
                         ],
-                    }}
+                    },
+                    ]}
                 >
-                    <Text>{enteredText ? enteredText : "Test"}</Text>
+                    <Text>{enteredText ? enteredText : ""}</Text>
                 </Animated.View>
             </PanGestureHandler>
         </GestureHandlerRootView>
 
     );
 };
+
+const styles = StyleSheet.create({
+    movableContainer: {
+        backgroundColor: 'transparent',
+        justifyContent: 'center',
+        alignItems: 'center',
+        position: 'absolute', // För att inte skapa "tomma" views i GenerateView
+
+    },
+});
 
