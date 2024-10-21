@@ -1,11 +1,10 @@
 import React, { useRef } from 'react';
 import { Text, Animated, StyleSheet} from 'react-native';
-import { useState } from 'react';
 import { PanGestureHandler, GestureHandlerRootView } from 'react-native-gesture-handler';
 
 // npm install react-native-gesture-handler
 
-export function MovableView({ setEnteredText, startingX, startingY }) {
+export function MovableView({ setEnteredText, startingX, startingY, simultaneousHandlers }) {
 
     // Förflyttningarna i variabler om texten förflyttas 50 i X så är distanceX = 50 (längden på förflyttningssträckan)
     // useRef används istället för state då detta värde inte omrenderas vid ändring av det.
@@ -49,7 +48,7 @@ export function MovableView({ setEnteredText, startingX, startingY }) {
     return (
         <GestureHandlerRootView style={{ backgroundColor: 'transparent' }}>
             {/*  <TextInput placeholder='input' onChangeText={textInputHandler} multiline={true} ></TextInput> */}
-            <PanGestureHandler onGestureEvent={gestureEvent} onHandlerStateChange={stateChangeHandler}>
+            <PanGestureHandler onGestureEvent={gestureEvent} simultaneousHandlers={simultaneousHandlers} onHandlerStateChange={stateChangeHandler}>
                 <Animated.View
                     style={[styles.movableContainer, {
                         // Animering av förflyttning.
@@ -76,6 +75,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         position: 'absolute', // För att inte skapa "tomma" views i GenerateView
+        zIndex: 999,
 
     },
 });

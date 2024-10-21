@@ -9,7 +9,7 @@ import {
   Pressable,
 } from "react-native";
 import { FlatList } from "react-native";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { ScrollView } from "react-native";
 import { ApiHandler } from "./ApiHandler";
 import { LinearGradient } from "expo-linear-gradient";
@@ -31,6 +31,8 @@ export function GenerateView(){
     const [textFieldsCount, setTextFieldsCount] = useState(0);
     const [imageSource, setImageSource] = useState(localImage);
     const [showTextInput, setShowTextInput] = useState(true)
+
+    const svRef = useRef(null);
 
     const [memes, setMemes] = useState([])
     useEffect(() =>{
@@ -134,12 +136,13 @@ export function GenerateView(){
             Ska anpassas efter vilka kordinater som hämtas i APIn */}
             {texts.map((text, index ) => ( 
               <MovableView key={index}
+              simultaneousHandlers={svRef}
               startingX={0} startingY={-200 + index*40} 
               style={styles.overlayText}  setEnteredText={text}/>
 
             ))}
             </View>
-            {/* Fick flytta ut denna och ändra till scrollView på rad 78 då renderingen inte fungerade på ios - JH */}
+            
             <View>
             <Text style={styles.underTitleTextStyle}>Choose Your Meme</Text>
             </View>
@@ -161,7 +164,7 @@ export function GenerateView(){
                 style={styles.listStyle}
             ></FlatList>
 
-              <ScrollView>
+              <ScrollView ref={svRef}>
                 {/* Skapar visst antal textinputs baserat på värdet av textfieldCount, detta baseras också på APIns hämtning. */}
             
               {showTextInput && Array.from({ length: textFieldsCount }).map((_, index) => (
