@@ -1,16 +1,16 @@
-import * as React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
+//Import dependencies & modules from react/react-native
+import * as React from "react";
+import { NavigationContainer } from "@react-navigation/native";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 //Import local modules
-import { GenerateView } from './GenerateView'; // Importera GenerateView
-import { SavedView } from './SavedView';       // Importera SavedView
+import { GenerateView } from "./GenerateView"; // Importera GenerateView
+import { SavedView } from "./SavedView"; // Importera SavedView
 
-//Skapa instans av bottomTabnavigator
+
 const Tab = createBottomTabNavigator();
 
 export default function App() {
-
   return (
     <NavigationContainer>
       <Tab.Navigator>
