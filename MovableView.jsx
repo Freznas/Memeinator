@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import { Animated, View, StyleSheet, PanResponder, Text } from 'react-native';
 
-export function MovableView({ enteredText, startingX, startingY, color }) {
+export function MovableView({ enteredText, startingX, startingY, color, position }) {
 
     // https://reactnative.dev/docs/panresponder
 
@@ -11,14 +11,18 @@ export function MovableView({ enteredText, startingX, startingY, color }) {
     const panResponder = useRef(
         PanResponder.create({
             onMoveShouldSetPanResponder: () => true,
-            onPanResponderMove: Animated.event([null, { dx: posX, dy: posY }], { useNativeDriver: false }
+            onPanResponderMove: Animated.event([null, { dx: posX, dy: posY }], { useNativeDriver: false },
             ),
-            onPanResponderRelease: () => {
+
+            onPanResponderRelease: (_, state) => {
+                position({ x: state.moveX, y: state.moveY })
                 posX.extractOffset();
                 posY.extractOffset();
-            },
+
+            }
         }),
     ).current;
+
 
     return (
         <View style={styles.movableContainer}>
@@ -30,7 +34,7 @@ export function MovableView({ enteredText, startingX, startingY, color }) {
                     ],
                 }}
                 {...panResponder.panHandlers}>
-                <Text style={{color: color}}>{enteredText ? enteredText : ""}</Text>
+                <Text style={{ color: color }}>{enteredText ? enteredText : ""}</Text>
             </Animated.View>
         </View>
     );

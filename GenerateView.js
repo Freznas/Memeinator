@@ -47,6 +47,12 @@ const [colors, setColors] = useState([]);
     const [selectedColor, setSelectedColor] = useState('#000000'); // 
   const [memes, setMemes] = useState([]);
   const [imgDim, setImgDim] = useState({width: 0, height: 0})
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+
+  const positionChange = (newPosition) => {
+    setPosition(newPosition);
+  };
+
 
   useEffect(() => {
     const fetchTextFieldCount = () => {
@@ -148,12 +154,7 @@ const [colors, setColors] = useState([]);
                 source={currentMeme ? { uri: currentMeme.url } : imageSource}
                 style={styles.imageStyle}
                 resizeMode="contain"
-                onLayout={(e) => {
-                    e.nativeEvent.layout; setImgDim({ width, height });
-                    console.log(`Bredd: ${imgDim}`)
 
-
-                } }
             />
 
             {/* Varje text som skrivs i inputs målas upp ovanpå memebilden, just nu bara på olika höjder av bilden.
@@ -162,13 +163,12 @@ const [colors, setColors] = useState([]);
 
               <MovableView key={index} style={styles.overlayText}
               startingX={ 0 } startingY={ 50 + index * 40 }
-              enteredText={text} color={colors[index]} />
+              enteredText={text} color={colors[index]} position={positionChange} />
 
             ))}
             </View>
             
             <View>
-            <Text style={styles.underTitleTextStyle}>Choose Your Meme</Text>
         </View> 
 
         <FlatList
@@ -182,6 +182,8 @@ const [colors, setColors] = useState([]);
                         setTextFieldsCount(item.box_count);
                         setTexts(Array(item.box_count).fill(""));
                         setShowTextInput(true);
+                        setImgDim({width: item.width, height: item.height})
+                        console.log(imgDim.height)
                     }}
                 >
                     <Image source={{ uri: item.url }} style={styles.memeScroll} />
@@ -201,6 +203,7 @@ const [colors, setColors] = useState([]);
                             placeholder={`Enter text ${index + 1}`}
                             value={texts[index]}
                             onChangeText={(text) => handleTextChange(text, index)}
+                             
                         />
                         <LinearGradient
                             colors={['#f43b47', '#0ba360']}
