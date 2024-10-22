@@ -157,9 +157,9 @@ const [colors, setColors] = useState([]);
         </View>
 
         {/* Fick flytta ut denna och ändra till scrollView på rad 78 då renderingen inte fungerade på ios - JH */}
-        <View>
+        {/* <View>
             <Text style={styles.underTitleTextStyle}>Choose Your Meme</Text>
-        </View>
+        </View> */}
 
         <FlatList
             data={data}
@@ -181,7 +181,7 @@ const [colors, setColors] = useState([]);
             style={styles.listStyle}
         />
 
-        <ScrollView>
+        <ScrollView style={styles.scrollView}>
             {/* Skapar visst antal textinputs baserat på värdet av textfieldCount, detta baseras också på APIns hämtning. */}
             {showTextInput &&
                 Array.from({ length: textFieldsCount }).map((_, index) => (
@@ -267,23 +267,26 @@ const styles = StyleSheet.create({
         padding: 20,
 
     },
+    scrollView: {
+        height: 150
+    },
 
     //Style för titeln
     titleTextStyle: {
-        marginTop: 60,
-        marginBottom: 10,
+        marginTop: 30,
+        marginBottom: 20,
         fontWeight: 'bold',
         color: 'white',
         fontSize: 25
     },
 
     //Style för "choose your meme" text <-- Do we need this text here? - Juhee
-    underTitleTextStyle: {
-        marginTop: 20,
-        fontWeight: 'normal',
-        color: 'white',
-        fontSize: 18
-    },
+    // underTitleTextStyle: {
+    //     marginTop: 10,
+    //     fontWeight: 'normal',
+    //     color: 'white',
+    //     fontSize: 18
+    // },
 
     //Style för den bild som visar den skapade memen med text
     imageStyle: {
@@ -325,6 +328,7 @@ const styles = StyleSheet.create({
 
     //Style för inputfields
     textInput: {
+        height: 35,
         width: 200,
         padding: 10,
         marginTop: 10,
