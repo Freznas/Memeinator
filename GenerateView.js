@@ -46,6 +46,7 @@ const [colors, setColors] = useState([]);
     const [selectedIndex, setSelectedIndex] = useState(null); //följ vilken input färg som ändras
     const [selectedColor, setSelectedColor] = useState('#000000'); // 
   const [memes, setMemes] = useState([]);
+  const [imgDim, setImgDim] = useState({width: 0, height: 0})
 
   useEffect(() => {
     const fetchTextFieldCount = () => {
@@ -147,6 +148,12 @@ const [colors, setColors] = useState([]);
                 source={currentMeme ? { uri: currentMeme.url } : imageSource}
                 style={styles.imageStyle}
                 resizeMode="contain"
+                onLayout={(e) => {
+                    e.nativeEvent.layout; setImgDim({ width, height });
+                    console.log(`Bredd: ${imgDim}`)
+
+
+                } }
             />
 
             {/* Varje text som skrivs i inputs målas upp ovanpå memebilden, just nu bara på olika höjder av bilden.
