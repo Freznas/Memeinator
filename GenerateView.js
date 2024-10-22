@@ -11,13 +11,15 @@ import {
   Modal
 } from "react-native";
 import { FlatList } from "react-native";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { ScrollView } from "react-native";
 import { ApiHandler } from "./ApiHandler";
 import { LinearGradient } from "expo-linear-gradient";
 import { DiscardButtonAnimation } from "./ButtonAnimation";
 import Slider from '@react-native-community/slider'; // Vi måste importera denna för vi måste ska kunna dölja den
 import { ColorPicker } from 'react-native-color-picker';
+import { MovableView } from "./MovableView";
+
 // Dummybild som används tillfälligt
 const localImage = require("./assets/memeinator.png");
 
@@ -44,6 +46,7 @@ const [colors, setColors] = useState([]);
     const [selectedIndex, setSelectedIndex] = useState(null); //följ vilken input färg som ändras
     const [selectedColor, setSelectedColor] = useState('#000000'); // 
   const [memes, setMemes] = useState([]);
+  const [imgDim, setImgDim] = useState({width: 0, height: 0})
 
   useEffect(() => {
     const fetchTextFieldCount = () => {
@@ -145,21 +148,28 @@ const [colors, setColors] = useState([]);
                 source={currentMeme ? { uri: currentMeme.url } : imageSource}
                 style={styles.imageStyle}
                 resizeMode="contain"
+                onLayout={(e) => {
+                    e.nativeEvent.layout; setImgDim({ width, height });
+                    console.log(`Bredd: ${imgDim}`)
+
+
+                } }
             />
 
             {/* Varje text som skrivs i inputs målas upp ovanpå memebilden, just nu bara på olika höjder av bilden.
             Ska anpassas efter vilka kordinater som hämtas i APIn */}
-            {texts.map((text, index) => (
-                <Text key={index} style={[styles.overlayText, { top: 100 + index * 40, color: colors[index] }]}>
-                    {text}
-                </Text>
-            ))}
-        </View>
+            {texts.map((text, index ) => ( 
 
-        {/* Fick flytta ut denna och ändra till scrollView på rad 78 då renderingen inte fungerade på ios - JH */}
-        <View>
+              <MovableView key={index} style={styles.overlayText}
+              startingX={ 0 } startingY={ 50 + index * 40 }
+              enteredText={text} color={colors[index]} />
+
+            ))}
+            </View>
+            
+            <View>
             <Text style={styles.underTitleTextStyle}>Choose Your Meme</Text>
-        </View>
+        </View> 
 
         <FlatList
             data={data}
@@ -181,7 +191,7 @@ const [colors, setColors] = useState([]);
             style={styles.listStyle}
         />
 
-        <ScrollView>
+        <ScrollView style={styles.scrollView}>
             {/* Skapar visst antal textinputs baserat på värdet av textfieldCount, detta baseras också på APIns hämtning. */}
             {showTextInput &&
                 Array.from({ length: textFieldsCount }).map((_, index) => (
@@ -245,9 +255,10 @@ const [colors, setColors] = useState([]);
                 buttonText="Discard"
                 buttonStyle={styles.pressableStyle}
                 textStyle={styles.buttonTextStyle}
-            />
+                >
+            </DiscardButtonAnimation>
 
-            <Pressable style={styles.pressableStyleSave} onPress={() => saveMemeInAsyncStorage()}>
+            <Pressable style={styles.pressableStyleSave} onPress={() => saveMemeInAsyncStorage()} >
                 <Text style={styles.buttonTextStyle}>Save</Text>
             </Pressable>
         </View>
@@ -266,23 +277,26 @@ const styles = StyleSheet.create({
         padding: 20,
 
     },
+    scrollView: {
+        height: 150
+    },
 
     //Style för titeln
     titleTextStyle: {
-        marginTop: 60,
-        marginBottom: 10,
+        marginTop: 30,
+        marginBottom: 20,
         fontWeight: 'bold',
         color: 'white',
         fontSize: 25
     },
 
     //Style för "choose your meme" text <-- Do we need this text here? - Juhee
-    underTitleTextStyle: {
-        marginTop: 20,
-        fontWeight: 'normal',
-        color: 'white',
-        fontSize: 18
-    },
+    // underTitleTextStyle: {
+    //     marginTop: 10,
+    //     fontWeight: 'normal',
+    //     color: 'white',
+    //     fontSize: 18
+    // },
 
     //Style för den bild som visar den skapade memen med text
     imageStyle: {
@@ -299,6 +313,8 @@ const styles = StyleSheet.create({
 
     //Style för själva listan
     listStyle: {
+        width: 300,
+        height: 300,
         marginTop: 20,
         maxHeight: 120
     },
@@ -322,6 +338,7 @@ const styles = StyleSheet.create({
 
     //Style för inputfields
     textInput: {
+        height: 35,
         width: 200,
         padding: 10,
         marginTop: 10,
@@ -333,6 +350,7 @@ const styles = StyleSheet.create({
     buttonContainer: {
         flexDirection: "row",
         width: '100%',
+        height: 90,
         paddingTop: 10,
         justifyContent: "space-between"
     },
@@ -344,7 +362,8 @@ const styles = StyleSheet.create({
         backgroundColor: "lightgray",
         alignItems: "center",
         padding: 10,
-        borderRadius: 5
+        borderRadius: 5,
+        justifyContent: "center"
     },
 
     pressableStyleSave: {
@@ -353,7 +372,8 @@ const styles = StyleSheet.create({
         backgroundColor: "#FFCF23",
         alignItems: "center",
         padding: 10,
-        borderRadius: 5
+        borderRadius: 5,
+        justifyContent: "center"
     },
 
     buttonTextStyle: {
