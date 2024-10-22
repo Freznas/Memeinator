@@ -17,7 +17,7 @@ export function SavedView() {
   const [memeList, setMemeList] = useState([]);
   const [selectedMeme, setSelectedMeme] = useState(null);
 
-  // A function to load existing memes
+  // A function to load existing memes from AsyncStorage
   const loadMemes = async () => {
     try {
       const storedMemes = await AsyncStorage.getItem("memesList");
@@ -29,14 +29,14 @@ export function SavedView() {
     }
   };
 
-  // useFocusEffect is used to see the memes without refreshing the browser
+  // Ensure memes are loaded every time the screen is focused
   useFocusEffect(
     useCallback(() => {
-      loadMemes(); // Load memes when screen comes into focus
+      loadMemes();
     }, [])
   );
 
-  // Modified delete function to delete meme by its unique id
+  // Modified delete function to delete a meme by its unique ID
   const deleteMeme = (meme) => {
     if (Platform.OS === "ios") {
       // Use Alert for iOS
@@ -47,10 +47,10 @@ export function SavedView() {
           style: "destructive",
           onPress: () => {
             const updatedList = memeList.filter((item) => item.id !== meme.id);
-            setMemeList(updatedList);
-            saveMemesToStorage(updatedList); // Save updated meme list to storage
+            setMemeList(updatedList); // Update the state
+            saveMemesToStorage(updatedList); // Save updated meme list to AsyncStorage
             if (selectedMeme === meme) {
-              setSelectedMeme(null);
+              setSelectedMeme(null); // Reset selection if the deleted meme was selected
             }
             console.log(`${meme.url} Deleted`);
           },
@@ -60,16 +60,17 @@ export function SavedView() {
       // Use window.confirm for other platforms (Android, Web)
       if (window.confirm("Are you sure you want to delete this meme?")) {
         const updatedList = memeList.filter((item) => item.id !== meme.id);
-        setMemeList(updatedList);
-        saveMemesToStorage(updatedList); // Save updated meme list to storage
+        setMemeList(updatedList); // Update the state
+        saveMemesToStorage(updatedList); // Save updated meme list to AsyncStorage
         if (selectedMeme === meme) {
-          setSelectedMeme(null);
+          setSelectedMeme(null); // Reset selection if the deleted meme was selected
         }
         console.log(`${meme.url} Deleted`);
       }
     }
   };
 
+  // Save the updated meme list to AsyncStorage
   const saveMemesToStorage = async (updatedList) => {
     try {
       await AsyncStorage.setItem("memesList", JSON.stringify(updatedList));
@@ -78,7 +79,7 @@ export function SavedView() {
     }
   };
 
-  // select a meme
+  // Select/deselect a meme
   const toggleSelectMeme = (meme) => {
     setSelectedMeme((prevSelected) => (prevSelected === meme ? null : meme));
   };
