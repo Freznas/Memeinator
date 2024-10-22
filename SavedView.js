@@ -38,26 +38,8 @@ export function SavedView() {
 
   // Modified delete function to delete a meme by its unique ID
   const deleteMeme = (meme) => {
-    if (Platform.OS === "ios") {
-      // Use Alert for iOS
-      Alert.alert("Delete Meme", "Are you sure you want to delete this meme?", [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "Delete",
-          style: "destructive",
-          onPress: () => {
-            const updatedList = memeList.filter((item) => item.id !== meme.id);
-            setMemeList(updatedList); // Update the state
-            saveMemesToStorage(updatedList); // Save updated meme list to AsyncStorage
-            if (selectedMeme === meme) {
-              setSelectedMeme(null); // Reset selection if the deleted meme was selected
-            }
-            console.log(`${meme.url} Deleted`);
-          },
-        },
-      ]);
-    } else {
-      // Use window.confirm for other platforms (Android, Web)
+    if (Platform.OS === "web") {
+      // Use window.confirm for web
       if (window.confirm("Are you sure you want to delete this meme?")) {
         const updatedList = memeList.filter((item) => item.id !== meme.id);
         setMemeList(updatedList); // Update the state
@@ -67,6 +49,31 @@ export function SavedView() {
         }
         console.log(`${meme.url} Deleted`);
       }
+    } else {
+      // Use Alert for iOS and Android
+      Alert.alert(
+        "Delete Meme",
+        "Are you sure you want to delete this meme?",
+        [
+          { text: "Cancel", style: "cancel" },
+          {
+            text: "Delete",
+            style: "destructive",
+            onPress: () => {
+              const updatedList = memeList.filter(
+                (item) => item.id !== meme.id
+              );
+              setMemeList(updatedList); // Update the state
+              saveMemesToStorage(updatedList); // Save updated meme list to AsyncStorage
+              if (selectedMeme === meme) {
+                setSelectedMeme(null); // Reset selection if the deleted meme was selected
+              }
+              console.log(`${meme.url} Deleted`);
+            },
+          },
+        ],
+        { cancelable: true }
+      );
     }
   };
 
