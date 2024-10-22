@@ -299,6 +299,8 @@ const styles = StyleSheet.create({
 
     //Style för själva listan
     listStyle: {
+        width: 300,
+        height: 300,
         marginTop: 20,
         maxHeight: 120
     },
