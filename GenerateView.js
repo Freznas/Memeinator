@@ -18,11 +18,17 @@ import { DiscardButtonAnimation } from "./ButtonAnimation";
 import Slider from "@react-native-community/slider"; // For hiding the slider
 import { ColorPicker } from "react-native-color-picker";
 
-// Local image as a placeholder
+// Dummybild som används tillfälligt
 const localImage = require("./assets/memeinator.png");
 
+// här vi gör en osynlig slider för pickern krävde en slider. rör ej!
+const DummySlider = () => {
+  return <View style={{ height: 0, width: 0 }} />;
+};
+export default DummySlider;
+
 export function GenerateView() {
-  // Fetch data from the ApiHandler
+  // Hämtar data och fetchMemes() från ApiHandler
   const { data, fetchMemes } = ApiHandler();
   const [currentMeme, setCurrentMeme] = useState(null);
   const [texts, setTexts] = useState([]);
@@ -36,13 +42,24 @@ export function GenerateView() {
   const [memes, setMemes] = useState([]);
 
   useEffect(() => {
+    const fetchTextFieldCount = () => {
+      // Antalet hämtas från API anrop
+      const responseCount = 0;
+      // Uppdatera textFieldsCount med svaret
+      setTextFieldsCount(responseCount);
+      setTexts(Array(responseCount).fill(""));
+    };
+    fetchTextFieldCount();
     fetchMemes();
     getMemesFromAsyncStorage();
   }, []);
 
   const handleTextChange = (text, index) => {
+    // Kopia av textarrayen som skrivs i input
     const newTexts = [...texts];
+    // Uppdaterar texten i texts-arrayen på rätt index
     newTexts[index] = text;
+    // Uppdaterar state med den nya texts-arrayen.
     setTexts(newTexts);
   };
 
@@ -53,15 +70,15 @@ export function GenerateView() {
   };
 
   const openColorPicker = (index) => {
-    setSelectedIndex(index);
-    setColorPickerVisible(true);
+    setSelectedIndex(index); // koppla färg till vald input index
+    setColorPickerVisible(true); // visa colorPicker modalen
   };
 
   const closeColorPicker = () => {
-    setColorPickerVisible(false);
+    setColorPickerVisible(false); //Dölj colorPicker modalen
   };
 
-  // Reset inputs on discard
+  //Nollställer textArrayen vid discard
   const handleDiscard = () => {
     setTexts(Array(textFieldsCount).fill(""));
     setCurrentMeme(null);
@@ -73,7 +90,9 @@ export function GenerateView() {
     try {
       const storedMemes = await AsyncStorage.getItem("memesList");
       const memeList = storedMemes ? JSON.parse(storedMemes) : [];
+      // Create array with new meme
       const updatedList = [...memeList, newMeme];
+      // Put array in storage
       await AsyncStorage.setItem("memesList", JSON.stringify(updatedList));
       alert("Meme Saved!");
     } catch (error) {
@@ -82,12 +101,8 @@ export function GenerateView() {
   };
 
   const saveMeme = async () => {
-    // if (!currentMeme || texts.every((text) => text === "")) {
-    //   alert("Please select a meme and add some text.");
-    //   return;
-    // }
-
     const newMeme = {
+      // Generating a unique id for each meme
       id: Date.now(),
       url: currentMeme.url,
       texts: texts,
@@ -100,6 +115,7 @@ export function GenerateView() {
 
   const getMemesFromAsyncStorage = async () => {
     try {
+      // Get array from storage
       const storedMemes = await AsyncStorage.getItem("memesList");
       if (storedMemes !== null) {
         setMemes(JSON.parse(storedMemes));
@@ -111,7 +127,7 @@ export function GenerateView() {
 
   return (
     <LinearGradient
-      colors={["#00D9E1", "#133CE3", "#8D4EFA"]}
+      colors={["#00D9E1", "#133CE3", "#8D4EFA"]} // Gradient colors
       start={{ x: 0.3, y: 0 }}
       end={{ x: 0.7, y: 1 }}
       style={styles.container}
@@ -119,11 +135,14 @@ export function GenerateView() {
       <Text style={styles.titleTextStyle}> Generate Your Own Memes </Text>
 
       <View style={styles.memeContainer}>
+        {/* Sätter bild till den meme du klickar på. Finns ingen, väljs dummybild - JH */}
         <Image
           source={currentMeme ? { uri: currentMeme.url } : imageSource}
           style={styles.imageStyle}
           resizeMode="contain"
         />
+        {/* Varje text som skrivs i inputs målas upp ovanpå memebilden, just nu bara på olika höjder av bilden.
+            Ska anpassas efter vilka kordinater som hämtas i APIn */}
         {texts.map((text, index) => (
           <Text
             key={index}
@@ -137,9 +156,10 @@ export function GenerateView() {
         ))}
       </View>
 
-      <View>
-        <Text style={styles.underTitleTextStyle}>Choose Your Meme</Text>
-      </View>
+      {/* Fick flytta ut denna och ändra till scrollView på rad 78 då renderingen inte fungerade på ios - JH */}
+      {/* <View>
+            <Text style={styles.underTitleTextStyle}>Choose Your Meme</Text>
+        </View> */}
 
       <FlatList
         data={data}
@@ -162,6 +182,7 @@ export function GenerateView() {
       />
 
       <ScrollView>
+        {/* Skapar visst antal textinputs baserat på värdet av textfieldCount, detta baseras också på APIns hämtning. */}
         {showTextInput &&
           Array.from({ length: textFieldsCount }).map((_, index) => (
             <View
@@ -207,6 +228,7 @@ export function GenerateView() {
                   closeColorPicker();
                 }}
                 style={{ flex: 1 }}
+                sliderComponent={DummySlider} //Lägg in den osynliga dummy slidern så colorPicker inte gnäller!
               />
               <View style={styles.buttonsContainer}>
                 <Pressable
