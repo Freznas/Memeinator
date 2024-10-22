@@ -17,19 +17,14 @@ import { ApiHandler } from "./ApiHandler";
 import { LinearGradient } from "expo-linear-gradient";
 import { DiscardButtonAnimation } from "./ButtonAnimation";
 import Slider from '@react-native-community/slider'; // Vi måste importera denna för vi måste ska kunna dölja den
-import { ColorPicker } from 'react-native-color-picker';import { MovableView } from "./MovableView";
+import { ColorPicker } from 'react-native-color-picker';
+import { MovableView } from "./MovableView";
 
 // Dummybild som används tillfälligt
 const localImage = require("./assets/memeinator.png");
 
 // Skapar en array av dummybilden (behövs?)
 const dummyImageData = new Array(10).fill(localImage);
-
-// här vi gör en osynlig slider för pickern krävde en slider. rör ej!
-const DummySlider = () => {
-    return <View style={{ height: 0, width: 0 }} />;
-};
-export default DummySlider;
 
 // här vi gör en osynlig slider för pickern krävde en slider. rör ej!
 const DummySlider = () => {
