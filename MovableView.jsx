@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import { Animated, View, StyleSheet, PanResponder, Text } from 'react-native';
 
-export function MovableView({ enteredText, startingX, startingY }) {
+export function MovableView({ enteredText, startingX, startingY, color }) {
 
     // https://reactnative.dev/docs/panresponder
 
@@ -30,7 +30,7 @@ export function MovableView({ enteredText, startingX, startingY }) {
                     ],
                 }}
                 {...panResponder.panHandlers}>
-                <Text>{enteredText ? enteredText : ""}</Text>
+                <Text style={{color: color}}>{enteredText ? enteredText : ""}</Text>
             </Animated.View>
         </View>
     );

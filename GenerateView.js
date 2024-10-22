@@ -153,9 +153,9 @@ const [colors, setColors] = useState([]);
             Ska anpassas efter vilka kordinater som hämtas i APIn */}
             {texts.map((text, index ) => ( 
 
-              <MovableView key={index} style={ styles.overlayText }
+              <MovableView key={index} style={styles.overlayText}
               startingX={ 0 } startingY={ 50 + index * 40 }
-              enteredText={text} />
+              enteredText={text} color={colors[index]} />
 
             ))}
             </View>
