@@ -245,9 +245,10 @@ const [colors, setColors] = useState([]);
                 buttonText="Discard"
                 buttonStyle={styles.pressableStyle}
                 textStyle={styles.buttonTextStyle}
-            />
+                >
+            </DiscardButtonAnimation>
 
-            <Pressable style={styles.pressableStyleSave} onPress={() => saveMemeInAsyncStorage()}>
+            <Pressable style={styles.pressableStyleSave} onPress={() => saveMemeInAsyncStorage()} >
                 <Text style={styles.buttonTextStyle}>Save</Text>
             </Pressable>
         </View>
@@ -335,6 +336,7 @@ const styles = StyleSheet.create({
     buttonContainer: {
         flexDirection: "row",
         width: '100%',
+        height: 90,
         paddingTop: 10,
         justifyContent: "space-between"
     },
@@ -346,7 +348,8 @@ const styles = StyleSheet.create({
         backgroundColor: "lightgray",
         alignItems: "center",
         padding: 10,
-        borderRadius: 5
+        borderRadius: 5,
+        justifyContent: "center"
     },
 
     pressableStyleSave: {
@@ -355,7 +358,8 @@ const styles = StyleSheet.create({
         backgroundColor: "#FFCF23",
         alignItems: "center",
         padding: 10,
-        borderRadius: 5
+        borderRadius: 5,
+        justifyContent: "center"
     },
 
     buttonTextStyle: {
