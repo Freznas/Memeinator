@@ -219,14 +219,13 @@ const [colors, setColors] = useState([]);
                         <View style={styles.buttonsContainer}>
                             <Pressable
                                 style={styles.colorButton}
-                                onPress={() => handleColorChange('#000000', selectedIndex)}
-                            >
+                                onPress={() => [handleColorChange('#000000', selectedIndex),  closeColorPicker()]}                            >
                                 <Text style={styles.colorButtonText}>Black</Text>
                             </Pressable>
                             <Pressable
                                 style={styles.colorButton}
-                                onPress={() => handleColorChange('#FFFFFF', selectedIndex)}
-                            >
+                                onPress={() => [handleColorChange('#FFFFFF', selectedIndex),  closeColorPicker()]}
+                                                            >
                                 <Text style={styles.colorButtonText}>White</Text>
                             </Pressable>
                         </View>
@@ -334,6 +333,7 @@ const styles = StyleSheet.create({
         marginTop: 10,
         backgroundColor: 'white',
         borderRadius: 5,
+        marginRight:5
     },
 
     //Style för buttonContainer
@@ -392,23 +392,24 @@ const styles = StyleSheet.create({
     }, colorButton: {
         backgroundColor: "lightgray",
         padding: 10,
-        magin: 10,
+        margin: 10,
         borderRadius: 5,
         margintop: 10,
+       
     },
     //Knapp För att öppna colorPicker.
     colorPickButton: {
         padding: 10,
         marginLeft: 10,
         borderRadius: 5,
-        margintop: 10,
-        height: 15,
-        width: 15,
+        margintop: 15,
+        height: 25,
+      
     },
     // Gradient för knapp till öppna colorPicker
     colorButtonGradient: {
         borderRadius: 5,
-        padding: 10,
+        padding: 5,
     },
    // mörklägger bakgrunden när man öppnar ColorPicker
     modalContainer: {
