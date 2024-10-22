@@ -11,17 +11,36 @@ export function MovableView({ enteredText, startingX, startingY, color, position
     const panResponder = useRef(
         PanResponder.create({
             onMoveShouldSetPanResponder: () => true,
-            onPanResponderMove: Animated.event([null, { dx: posX, dy: posY }], { useNativeDriver: false },
-            ),
+            onPanResponderMove: Animated.event([null, { dx: posX, dy: posY }], {
+                useNativeDriver: false,
+                listener: (e, gestureState) => {
+                    checkBounds(e, gestureState)
+
+                }
+            }),
 
             onPanResponderRelease: (_, state) => {
                 position({ x: state.moveX, y: state.moveY })
+
                 posX.extractOffset();
                 posY.extractOffset();
 
-            }
+            },
+
+
         }),
     ).current;
+
+    function checkBounds(_, gestureState) {
+        if (gestureState.moveX > 680) {  
+            posX.setValue(0)
+            posY.setValue(0)
+        }
+        if (gestureState.moveX < 350) {
+            posX.setValue(0)
+            posY.setValue(0)
+        }
+    }
 
 
     return (
