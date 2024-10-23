@@ -44,6 +44,16 @@ export function GenerateView() {
   const [memes, setMemes] = useState([]);
   const [imgDim, setImgDim] = useState({width: 0, height: 0})
 
+
+
+  const fetchImageDimensions = (url) => {
+    Image.getSize(url, (width, height) => {
+      setImgDim({ width, height });
+    }, (error) => {
+      console.error("Error fetching image dimensions: ", error);
+    });
+  };
+
   useEffect(() => {
     const fetchTextFieldCount = () => {
       // Antalet hämtas från API anrop
@@ -51,7 +61,9 @@ export function GenerateView() {
       // Uppdatera textFieldsCount med svaret
       setTextFieldsCount(responseCount);
       setTexts(Array(responseCount).fill(""));
+   
     };
+    
     fetchTextFieldCount();
     fetchMemes();
     getMemesFromAsyncStorage();
@@ -151,10 +163,16 @@ export function GenerateView() {
             Ska anpassas efter vilka kordinater som hämtas i APIn */}
             {texts.map((text, index ) => ( 
 
-              <MovableView key={index} style={styles.overlayText}
-              startingX={ 0 } startingY={ 50 + index * 40 }
-              enteredText={text} color={colors[index]} />
 
+              <MovableView key={index} style={styles.overlayText}
+              startingX={ 100 } 
+              startingY={ 50 + index * 40 }
+              enteredText={text} 
+              color={colors[index]}
+              imgDim={imgDim}
+             />
+
+              
             ))}
             </View>
             <FlatList
@@ -168,6 +186,7 @@ export function GenerateView() {
                         setTextFieldsCount(item.box_count);
                         setTexts(Array(item.box_count).fill(""));
                         setShowTextInput(true);
+                        setImgDim({width: item.width,height: item.height})
                     }}
                 >
                     <Image source={{ uri: item.url }} style={styles.memeScroll} />
@@ -396,8 +415,8 @@ const styles = StyleSheet.create({
     },
     // Gradient för knapp till öppna colorPicker
     colorButtonGradient: {
-        borderRadius: 5,
-        padding: 5,
+        borderRadius: 100,
+        padding: 1,
     },
    // mörklägger bakgrunden när man öppnar ColorPicker
     modalContainer: {
