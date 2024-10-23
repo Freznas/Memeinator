@@ -12,12 +12,52 @@ import { LinearGradient } from "expo-linear-gradient";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { useFocusEffect } from "@react-navigation/native";
-
+// Android libs for saving file to device
+import * as FileSystem from 'expo-file-system';
+import * as MediaLibrary from 'expo-media-library';
+import { Asset } from "expo-asset";
 export function SavedView() {
   const [memeList, setMemeList] = useState([]);
   const [selectedMeme, setSelectedMeme] = useState(null);
+  const [downloadedFileUri, setDownloadedFileUri] = useState(null);
+  
+  const downloadMeme = async (meme) => {
+    console.log(meme.url)
+    try {
+      
+     // const asset = await Asset.fromModule(require(memeurl)); if u wanna download File from project
+        
+      // Request permission to access the media library (gallery)
+    const { status } = await MediaLibrary.requestPermissionsAsync();
+    if (status !== 'granted') {
+      alert('Permission to access media library is required!');
+      return;
+    }
 
-  // A function to load existing memes from AsyncStorage
+    // Set the local file path where you want to save the image
+    const fileUri = FileSystem.documentDirectory + meme.id +".jpg";
+
+
+      const { uri } = await FileSystem.downloadAsync(meme.url, fileUri);
+      console.log('Image downloaded to:', uri);
+  
+      // Save the downloaded image to the media library
+      const asset = await MediaLibrary.createAssetAsync(uri);
+      const album = await MediaLibrary.getAlbumAsync('Download');
+      if (album == null) {
+        await MediaLibrary.createAlbumAsync('Download', asset, false);
+      } else {
+        await MediaLibrary.addAssetsToAlbumAsync([asset], album, false);
+      }
+  
+      setDownloadedFileUri(uri);
+      alert('Image saved to your gallery!');
+    } catch (error) {
+      console.error('Error downloading the image:', error);
+    }
+};
+  // A function to load existing memes
+
   const loadMemes = async () => {
     try {
       const storedMemes = await AsyncStorage.getItem("memesList");
@@ -32,7 +72,12 @@ export function SavedView() {
   // Ensure memes are loaded every time the screen is focused
   useFocusEffect(
     useCallback(() => {
-      loadMemes();
+      loadMemes(); // Load memes when screen comes into focus
+      for(let i =0; i<memeList.length; i++)
+      {
+        console.log(memeList[i])
+      }
+
     }, [])
   );
 
@@ -113,7 +158,7 @@ export function SavedView() {
                   </Pressable>
                   <Pressable
                     style={styles.iconButton}
-                    onPress={() => downloadMeme(meme.url)}
+                    onPress={() => downloadMeme(meme)}
                   >
                     <Icon name="download" size={24} color="#fff" />
                   </Pressable>
