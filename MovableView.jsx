@@ -16,31 +16,33 @@ export function MovableView({ startingX, startingY, enteredText, color }) {
                 const newY = position.y + gestureState.dy;
 
                 // Kontrollera om texten är inom bildens gränser
-                if (newX < 0 || newX +100 > 350 ||
-                     newY < 0 || newY +50 > 350
+                if (newX < 0 || newX +100 > 400 ||
+                     newY < 0 || newY +50 > 400
                     ) {
-                    setIsVisible(false); // Texten försvinner om den flyttas utanför bilden
+                    setPosition({ x: startingX, y: startingY });
+                    // Texten försvinner om den flyttas utanför bilden
                 } else {
-                    setIsVisible(true); // Texten syns om den är inom bilden
+                    // setIsVisible(true); // Texten syns om den är inom bilden
                     setPosition({ x: newX, y: newY }); // Uppdatera positionen
                 }
             },
             onPanResponderRelease: () => {
-                // Valfritt: spara den slutgiltiga positionen eller utför ytterligare åtgärder här
+                
             }
         })
     ).current;
+
 
     return (
         <View
             {...panResponder.panHandlers}
             style={[styles.movableContainer, { left: position.x, top: position.y }]}
         >
-            {isVisible && (
+            
                 <Text style={[styles.movableText, { color: color }]}>
                     {enteredText}
                 </Text>
-            )}
+            
         </View>
     );
 }
@@ -51,6 +53,6 @@ const styles = {
         position: 'absolute',
     },
     movableText: {
-        // Här kan du definiera dina textstilar
+        fontSize: 24
     }
 };
