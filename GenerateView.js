@@ -144,12 +144,7 @@ export function GenerateView() {
                 source={currentMeme ? { uri: currentMeme.url } : imageSource}
                 style={styles.imageStyle}
                 resizeMode="contain"
-                onLayout={(e) => {
-                    e.nativeEvent.layout; setImgDim({ width, height });
-                    console.log(`Bredd: ${imgDim}`)
-
-
-                } }
+               
             />
 
             {/* Varje text som skrivs i inputs målas upp ovanpå memebilden, just nu bara på olika höjder av bilden.
@@ -162,27 +157,26 @@ export function GenerateView() {
 
             ))}
             </View>
-            
-      
-
-        <FlatList
+            <FlatList
             data={data}
             horizontal={true}
             keyExtractor={(item) => item.id.toString()}
             renderItem={({ item }) => (
-
                 <Pressable
-                  style={styles.colorPickButton}
-                  onPress={() => openColorPicker(index)}
+                    onPress={() => {
+                        setCurrentMeme(item);
+                        setTextFieldsCount(item.box_count);
+                        setTexts(Array(item.box_count).fill(""));
+                        setShowTextInput(true);
+                    }}
                 >
-                  <Text></Text>
+                    <Image source={{ uri: item.url }} style={styles.memeScroll} />
                 </Pressable>
-
             )}
             ListEmptyComponent={<Text>Loading...</Text>}
             style={styles.listStyle}
         />
-
+   
         <ScrollView style={styles.scrollView}>
             {/* Skapar visst antal textinputs baserat på värdet av textfieldCount, detta baseras också på APIns hämtning. */}
             {showTextInput &&
@@ -238,26 +232,10 @@ export function GenerateView() {
                     </Pressable>
                 </View>
             </Modal>
+            
         )}
 
         <View style={styles.buttonContainer}>
-            <DiscardButtonAnimation
-                onPress={handleDiscard}
-                buttonText="Discard"
-                buttonStyle={styles.pressableStyle}
-                textStyle={styles.buttonTextStyle}
-                >
-            </DiscardButtonAnimation>
-
-            <Pressable style={styles.pressableStyleSave} onPress={() => saveMemeInAsyncStorage()} >
-                <Text style={styles.buttonTextStyle}>Save</Text>
-
-            </Pressable>
-          </View>
-        </Modal>
-      )}
-
-      <View style={styles.buttonContainer}>
         <DiscardButtonAnimation
           onPress={handleDiscard}
           buttonText="Discard"
