@@ -171,9 +171,6 @@ const [colors, setColors] = useState([]);
     >
         <Text style={styles.titleTextStyle}> Generate Your Own Memes </Text>
 
-        {/* Drag-position utskrivna i appen */}
-        <Text style={styles.titleTextStyle}> {`X: ${position.x}, Y: ${position.y}`} </Text>
-
         <View style={styles.memeContainer}>
             {/* Sätter bild till den meme du klickar på. Finns ingen, väljs dummybild - JH */}
             <Image
