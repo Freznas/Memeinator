@@ -13,26 +13,25 @@ export function MovableView({ enteredText, startingX, startingY, color, position
             onMoveShouldSetPanResponder: () => true,
             onPanResponderMove: Animated.event([null, { dx: posX, dy: posY }], {
                 useNativeDriver: false,
+
+                // listener skickar vidare gestureState till check bounds nedan
                 listener: (e, gestureState) => {
                     checkBounds(e, gestureState)
+                    position({x: gestureState.moveX, y: gestureState.moveY})
 
                 }
             }),
-
-            onPanResponderRelease: (_, state) => {
-                position({ x: state.moveX, y: state.moveY })
-
+            onPanResponderRelease: () => {
                 posX.extractOffset();
                 posY.extractOffset();
-
             },
-
-
         }),
     ).current;
 
+    // Kollar hårdkodade värden. Här behöver vi bildens position, bredd och höjd.
+    // Alternativt göra bounds i GenerateView och skicka detta till GenerateView som ovan i properties.
     function checkBounds(_, gestureState) {
-        if (gestureState.moveX > 680) {  
+        if (gestureState.moveX > 680) {
             posX.setValue(0)
             posY.setValue(0)
         }
@@ -41,7 +40,6 @@ export function MovableView({ enteredText, startingX, startingY, color, position
             posY.setValue(0)
         }
     }
-
 
     return (
         <View style={styles.movableContainer}>

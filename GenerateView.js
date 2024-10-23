@@ -46,9 +46,14 @@ const [colors, setColors] = useState([]);
     const [selectedIndex, setSelectedIndex] = useState(null); //följ vilken input färg som ändras
     const [selectedColor, setSelectedColor] = useState('#000000'); // 
   const [memes, setMemes] = useState([]);
+
+  // Sätter imgage-dimensioner i onPress på en meme. 
   const [imgDim, setImgDim] = useState({width: 0, height: 0})
+  // Sätter position.
   const [position, setPosition] = useState({ x: 0, y: 0 });
 
+  // Hanterar position på texten nedan i MovableView på rad 172 och skickar detta via properties.
+  // Används bara till att skriva ut position just nu på rad 152.
   const positionChange = (newPosition) => {
     setPosition(newPosition);
   };
@@ -148,6 +153,9 @@ const [colors, setColors] = useState([]);
     >
         <Text style={styles.titleTextStyle}> Generate Your Own Memes </Text>
 
+        {/* Drag-position utskrivna i appen */}
+        <Text style={styles.titleTextStyle}> {`X: ${position.x}, Y: ${position.y}`} </Text>
+
         <View style={styles.memeContainer}>
             {/* Sätter bild till den meme du klickar på. Finns ingen, väljs dummybild - JH */}
             <Image
@@ -182,6 +190,7 @@ const [colors, setColors] = useState([]);
                         setTextFieldsCount(item.box_count);
                         setTexts(Array(item.box_count).fill(""));
                         setShowTextInput(true);
+                        //Image-dimensioner
                         setImgDim({width: item.width, height: item.height})
                         console.log(imgDim.height)
                     }}
