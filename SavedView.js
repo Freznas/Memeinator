@@ -12,12 +12,52 @@ import { LinearGradient } from "expo-linear-gradient";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { useFocusEffect } from "@react-navigation/native";
-
+// Android libs for saving file to device
+import * as FileSystem from 'expo-file-system';
+import * as MediaLibrary from 'expo-media-library';
+import { Asset } from "expo-asset";
 export function SavedView() {
   const [memeList, setMemeList] = useState([]);
   const [selectedMeme, setSelectedMeme] = useState(null);
+  const [downloadedFileUri, setDownloadedFileUri] = useState(null);
+  
+  const downloadMeme = async (meme) => {
+    console.log(meme.url)
+    try {
+      
+     // const asset = await Asset.fromModule(require(memeurl)); if u wanna download File from project
+        
+      // Request permission to access the media library (gallery)
+    const { status } = await MediaLibrary.requestPermissionsAsync();
+    if (status !== 'granted') {
+      alert('Permission to access media library is required!');
+      return;
+    }
 
+    // Set the local file path where you want to save the image
+    const fileUri = FileSystem.documentDirectory + meme.id +".jpg";
+
+
+      const { uri } = await FileSystem.downloadAsync(meme.url, fileUri);
+      console.log('Image downloaded to:', uri);
+  
+      // Save the downloaded image to the media library
+      const asset = await MediaLibrary.createAssetAsync(uri);
+      const album = await MediaLibrary.getAlbumAsync('Download');
+      if (album == null) {
+        await MediaLibrary.createAlbumAsync('Download', asset, false);
+      } else {
+        await MediaLibrary.addAssetsToAlbumAsync([asset], album, false);
+      }
+  
+      setDownloadedFileUri(uri);
+      alert('Image saved to your gallery!');
+    } catch (error) {
+      console.error('Error downloading the image:', error);
+    }
+};
   // A function to load existing memes
+
   const loadMemes = async () => {
     try {
       const storedMemes = await AsyncStorage.getItem("memesList");
@@ -29,47 +69,60 @@ export function SavedView() {
     }
   };
 
-  // useFocusEffect is used to see the memes without refreshing the browser
+  // Ensure memes are loaded every time the screen is focused
   useFocusEffect(
     useCallback(() => {
       loadMemes(); // Load memes when screen comes into focus
+      for(let i =0; i<memeList.length; i++)
+      {
+        console.log(memeList[i])
+      }
+
     }, [])
   );
 
-  // Modified delete function to delete meme by its unique id
+  // Modified delete function to delete a meme by its unique ID
   const deleteMeme = (meme) => {
-    if (Platform.OS === "ios") {
-      // Use Alert for iOS
-      Alert.alert("Delete Meme", "Are you sure you want to delete this meme?", [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "Delete",
-          style: "destructive",
-          onPress: () => {
-            const updatedList = memeList.filter((item) => item.id !== meme.id);
-            setMemeList(updatedList);
-            saveMemesToStorage(updatedList); // Save updated meme list to storage
-            if (selectedMeme === meme) {
-              setSelectedMeme(null);
-            }
-            console.log(`${meme.url} Deleted`);
-          },
-        },
-      ]);
-    } else {
-      // Use window.confirm for other platforms (Android, Web)
+    if (Platform.OS === "web") {
+      // Use window.confirm for web
       if (window.confirm("Are you sure you want to delete this meme?")) {
         const updatedList = memeList.filter((item) => item.id !== meme.id);
-        setMemeList(updatedList);
-        saveMemesToStorage(updatedList); // Save updated meme list to storage
+        setMemeList(updatedList); // Update the state
+        saveMemesToStorage(updatedList); // Save updated meme list to AsyncStorage
         if (selectedMeme === meme) {
-          setSelectedMeme(null);
+          setSelectedMeme(null); // Reset selection if the deleted meme was selected
         }
         console.log(`${meme.url} Deleted`);
       }
+    } else {
+      // Use Alert for iOS and Android
+      Alert.alert(
+        "Delete Meme",
+        "Are you sure you want to delete this meme?",
+        [
+          { text: "Cancel", style: "cancel" },
+          {
+            text: "Delete",
+            style: "destructive",
+            onPress: () => {
+              const updatedList = memeList.filter(
+                (item) => item.id !== meme.id
+              );
+              setMemeList(updatedList); // Update the state
+              saveMemesToStorage(updatedList); // Save updated meme list to AsyncStorage
+              if (selectedMeme === meme) {
+                setSelectedMeme(null); // Reset selection if the deleted meme was selected
+              }
+              console.log(`${meme.url} Deleted`);
+            },
+          },
+        ],
+        { cancelable: true }
+      );
     }
   };
 
+  // Save the updated meme list to AsyncStorage
   const saveMemesToStorage = async (updatedList) => {
     try {
       await AsyncStorage.setItem("memesList", JSON.stringify(updatedList));
@@ -78,7 +131,7 @@ export function SavedView() {
     }
   };
 
-  // select a meme
+  // Select/deselect a meme
   const toggleSelectMeme = (meme) => {
     setSelectedMeme((prevSelected) => (prevSelected === meme ? null : meme));
   };
@@ -105,7 +158,7 @@ export function SavedView() {
                   </Pressable>
                   <Pressable
                     style={styles.iconButton}
-                    onPress={() => downloadMeme(meme.url)}
+                    onPress={() => downloadMeme(meme)}
                   >
                     <Icon name="download" size={24} color="#fff" />
                   </Pressable>
