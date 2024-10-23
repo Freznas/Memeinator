@@ -1,4 +1,3 @@
-
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
   View,
@@ -8,7 +7,7 @@ import {
   Image,
   TextInput,
   Pressable,
-  Modal
+  Modal,
 } from "react-native";
 import { FlatList } from "react-native";
 import { useState, useEffect, useRef } from "react";
@@ -16,6 +15,7 @@ import { ScrollView } from "react-native";
 import { ApiHandler } from "./ApiHandler";
 import { LinearGradient } from "expo-linear-gradient";
 import { DiscardButtonAnimation } from "./ButtonAnimation";
+
 import Slider from '@react-native-community/slider'; // Vi måste importera denna för vi måste ska kunna dölja den
 import { ColorPicker } from 'react-native-color-picker';
 import { MovableView } from "./MovableView";
@@ -23,15 +23,11 @@ import { MovableView } from "./MovableView";
 // Dummybild som används tillfälligt
 const localImage = require("./assets/memeinator.png");
 
-// Skapar en array av dummybilden (behövs?)
-const dummyImageData = new Array(10).fill(localImage);
-
 // här vi gör en osynlig slider för pickern krävde en slider. rör ej!
 const DummySlider = () => {
-    return <View style={{ height: 0, width: 0 }} />;
+  return <View style={{ height: 0, width: 0 }} />;
 };
 export default DummySlider;
-
 
 export function GenerateView() {
   // Hämtar data och fetchMemes() från ApiHandler
@@ -41,10 +37,10 @@ export function GenerateView() {
   const [textFieldsCount, setTextFieldsCount] = useState(0);
   const [imageSource, setImageSource] = useState(localImage);
   const [showTextInput, setShowTextInput] = useState(true);
-const [colors, setColors] = useState([]);
-    const [isColorPickerVisible, setColorPickerVisible] = useState(false);
-    const [selectedIndex, setSelectedIndex] = useState(null); //följ vilken input färg som ändras
-    const [selectedColor, setSelectedColor] = useState('#000000'); // 
+  const [colors, setColors] = useState([]);
+  const [isColorPickerVisible, setColorPickerVisible] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState(null);
+  const [selectedColor, setSelectedColor] = useState("#000000");
   const [memes, setMemes] = useState([]);
   const [imgDim, setImgDim] = useState({width: 0, height: 0})
 
@@ -69,49 +65,55 @@ const [colors, setColors] = useState([]);
     // Uppdaterar state med den nya texts-arrayen.
     setTexts(newTexts);
   };
-  
-    const handleColorChange = (selectedColor, index) => {
-        const newColors = [...colors];
-        newColors[index] = selectedColor;
-        setColors(newColors);
 
-    };
+  const handleColorChange = (selectedColor, index) => {
+    const newColors = [...colors];
+    newColors[index] = selectedColor;
+    setColors(newColors);
+  };
 
-    const openColorPicker = (index) => {
-        setSelectedIndex(index);  // koppla färg till vald input index
-        setColorPickerVisible(true);  // visa colorPicker modalen
+  const openColorPicker = (index) => {
+    setSelectedIndex(index); // koppla färg till vald input index
+    setColorPickerVisible(true); // visa colorPicker modalen
+  };
 
-    };
+  const closeColorPicker = () => {
+    setColorPickerVisible(false); //Dölj colorPicker modalen
+  };
 
-    const closeColorPicker = () => {
-        setColorPickerVisible(false);  //Dölj colorPicker modalen
-    };
+  //Nollställer textArrayen vid discard
+  const handleDiscard = () => {
+    setTexts(Array(textFieldsCount).fill(""));
+    setCurrentMeme(null);
+    setImageSource(localImage);
+    setShowTextInput(false);
+  };
 
-
-    //Nollställer textArrayen vid discard
-    const handleDiscard = () => {
-        setTexts(Array(textFieldsCount).fill(""))
-        setCurrentMeme(null)
-        setImageSource(localImage)
-        setShowTextInput(false)
-    }
-
-
-  const saveMemeInAsyncStorage = async () => {
-    // Generating a unique id for each meme
-    const memeToSave = { id: Date.now(), url: currentMeme.url, texts: texts };
-    // Create array with new meme
-    const updatedMemes = [...memes, memeToSave];
-    setMemes(updatedMemes);
-
+  const saveNewMeme = async (newMeme) => {
     try {
+      const storedMemes = await AsyncStorage.getItem("memesList");
+      const memeList = storedMemes ? JSON.parse(storedMemes) : [];
+      // Create array with new meme
+      const updatedList = [...memeList, newMeme];
       // Put array in storage
-      await AsyncStorage.setItem("memesList", JSON.stringify(updatedMemes));
-      console.log("Meme Saved!");
+      await AsyncStorage.setItem("memesList", JSON.stringify(updatedList));
       alert("Meme Saved!");
     } catch (error) {
-      console.error("Error saving Meme:", error);
+      console.error("Error saving new meme:", error);
     }
+  };
+
+  const saveMeme = async () => {
+    const newMeme = {
+      // Generating a unique id for each meme
+      id: Date.now(),
+      url: currentMeme.url,
+      texts: texts,
+      colors: colors,
+    };
+
+    saveNewMeme(newMeme);
+    setMemes((prevMemes) => [...prevMemes, newMeme]);
   };
 
   const getMemesFromAsyncStorage = async () => {
@@ -120,26 +122,20 @@ const [colors, setColors] = useState([]);
       const storedMemes = await AsyncStorage.getItem("memesList");
       if (storedMemes !== null) {
         setMemes(JSON.parse(storedMemes));
-        console.log(
-          "Retrieved memes from asyncStorage:",
-          JSON.parse(storedMemes)
-        );
-      } else {
-        console.log("Async Storage contains no memes");
       }
     } catch (error) {
       console.error("Error retrieving memes:", error);
     }
   };
 
-
   return (
     <LinearGradient
-        colors={['#00D9E1', '#133CE3', '#8D4EFA']} // Gradient colors
-        start={{ x: 0.3, y: 0 }}
-        end={{ x: 0.7, y: 1 }}
-        style={styles.container}
+      colors={["#00D9E1", "#133CE3", "#8D4EFA"]} // Gradient colors
+      start={{ x: 0.3, y: 0 }}
+      end={{ x: 0.7, y: 1 }}
+      style={styles.container}
     >
+
         <Text style={styles.titleTextStyle}> Generate Your Own Memes </Text>
 
         <View style={styles.memeContainer}>
@@ -167,25 +163,21 @@ const [colors, setColors] = useState([]);
             ))}
             </View>
             
-            <View>
-            <Text style={styles.underTitleTextStyle}>Choose Your Meme</Text>
-        </View> 
+      
 
         <FlatList
             data={data}
             horizontal={true}
             keyExtractor={(item) => item.id.toString()}
             renderItem={({ item }) => (
+
                 <Pressable
-                    onPress={() => {
-                        setCurrentMeme(item);
-                        setTextFieldsCount(item.box_count);
-                        setTexts(Array(item.box_count).fill(""));
-                        setShowTextInput(true);
-                    }}
+                  style={styles.colorPickButton}
+                  onPress={() => openColorPicker(index)}
                 >
-                    <Image source={{ uri: item.url }} style={styles.memeScroll} />
+                  <Text></Text>
                 </Pressable>
+
             )}
             ListEmptyComponent={<Text>Loading...</Text>}
             style={styles.listStyle}
@@ -260,14 +252,30 @@ const [colors, setColors] = useState([]);
 
             <Pressable style={styles.pressableStyleSave} onPress={() => saveMemeInAsyncStorage()} >
                 <Text style={styles.buttonTextStyle}>Save</Text>
+
             </Pressable>
-        </View>
+          </View>
+        </Modal>
+      )}
+
+      <View style={styles.buttonContainer}>
+        <DiscardButtonAnimation
+          onPress={handleDiscard}
+          buttonText="Discard"
+          buttonStyle={styles.pressableStyle}
+          textStyle={styles.buttonTextStyle}
+        />
+
+        <Pressable style={styles.pressableStyleSave} onPress={saveMeme}>
+          <Text style={styles.buttonTextStyle}>Save</Text>
+        </Pressable>
+      </View>
     </LinearGradient>
-);
+  );
 }
 
-
 const styles = StyleSheet.create({
+
 
     //Style för hela skärmen
     container: {
@@ -289,14 +297,6 @@ const styles = StyleSheet.create({
         color: 'white',
         fontSize: 25
     },
-
-    //Style för "choose your meme" text <-- Do we need this text here? - Juhee
-    // underTitleTextStyle: {
-    //     marginTop: 10,
-    //     fontWeight: 'normal',
-    //     color: 'white',
-    //     fontSize: 18
-    // },
 
     //Style för den bild som visar den skapade memen med text
     imageStyle: {
