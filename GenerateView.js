@@ -144,12 +144,7 @@ export function GenerateView() {
                 source={currentMeme ? { uri: currentMeme.url } : imageSource}
                 style={styles.imageStyle}
                 resizeMode="contain"
-                onLayout={(e) => {
-                    e.nativeEvent.layout; setImgDim({ width, height });
-                    console.log(`Bredd: ${imgDim}`)
-
-
-                } }
+               
             />
 
             {/* Varje text som skrivs i inputs målas upp ovanpå memebilden, just nu bara på olika höjder av bilden.
@@ -162,27 +157,26 @@ export function GenerateView() {
 
             ))}
             </View>
-            
-      
-
-        <FlatList
+            <FlatList
             data={data}
             horizontal={true}
             keyExtractor={(item) => item.id.toString()}
             renderItem={({ item }) => (
-
                 <Pressable
-                  style={styles.colorPickButton}
-                  onPress={() => openColorPicker(index)}
+                    onPress={() => {
+                        setCurrentMeme(item);
+                        setTextFieldsCount(item.box_count);
+                        setTexts(Array(item.box_count).fill(""));
+                        setShowTextInput(true);
+                    }}
                 >
-                  <Text></Text>
+                    <Image source={{ uri: item.url }} style={styles.memeScroll} />
                 </Pressable>
-
             )}
             ListEmptyComponent={<Text>Loading...</Text>}
             style={styles.listStyle}
         />
-
+   
         <ScrollView style={styles.scrollView}>
             {/* Skapar visst antal textinputs baserat på värdet av textfieldCount, detta baseras också på APIns hämtning. */}
             {showTextInput &&
@@ -221,14 +215,13 @@ export function GenerateView() {
                         <View style={styles.buttonsContainer}>
                             <Pressable
                                 style={styles.colorButton}
-                                onPress={() => handleColorChange('#000000', selectedIndex)}
-                            >
+                                onPress={() => [handleColorChange('#000000', selectedIndex),  closeColorPicker()]}                            >
                                 <Text style={styles.colorButtonText}>Black</Text>
                             </Pressable>
                             <Pressable
                                 style={styles.colorButton}
-                                onPress={() => handleColorChange('#FFFFFF', selectedIndex)}
-                            >
+                                onPress={() => [handleColorChange('#FFFFFF', selectedIndex),  closeColorPicker()]}
+                                                            >
                                 <Text style={styles.colorButtonText}>White</Text>
                             </Pressable>
                         </View>
@@ -239,26 +232,10 @@ export function GenerateView() {
                     </Pressable>
                 </View>
             </Modal>
+            
         )}
 
         <View style={styles.buttonContainer}>
-            <DiscardButtonAnimation
-                onPress={handleDiscard}
-                buttonText="Discard"
-                buttonStyle={styles.pressableStyle}
-                textStyle={styles.buttonTextStyle}
-                >
-            </DiscardButtonAnimation>
-
-            <Pressable style={styles.pressableStyleSave} onPress={() => saveMemeInAsyncStorage()} >
-                <Text style={styles.buttonTextStyle}>Save</Text>
-
-            </Pressable>
-          </View>
-        </Modal>
-      )}
-
-      <View style={styles.buttonContainer}>
         <DiscardButtonAnimation
           onPress={handleDiscard}
           buttonText="Discard"
@@ -344,6 +321,7 @@ const styles = StyleSheet.create({
         marginTop: 10,
         backgroundColor: 'white',
         borderRadius: 5,
+        marginRight:5
     },
 
     //Style för buttonContainer
@@ -402,23 +380,24 @@ const styles = StyleSheet.create({
     }, colorButton: {
         backgroundColor: "lightgray",
         padding: 10,
-        magin: 10,
+        margin: 10,
         borderRadius: 5,
         margintop: 10,
+       
     },
     //Knapp För att öppna colorPicker.
     colorPickButton: {
         padding: 10,
         marginLeft: 10,
         borderRadius: 5,
-        margintop: 10,
-        height: 15,
-        width: 15,
+        margintop: 15,
+        height: 25,
+      
     },
     // Gradient för knapp till öppna colorPicker
     colorButtonGradient: {
         borderRadius: 5,
-        padding: 10,
+        padding: 5,
     },
    // mörklägger bakgrunden när man öppnar ColorPicker
     modalContainer: {
