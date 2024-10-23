@@ -1,45 +1,56 @@
-import React, { useRef } from 'react';
-import { Animated, View, StyleSheet, PanResponder, Text } from 'react-native';
+import React, { useState, useRef } from 'react';
+import { View, Text, PanResponder } from 'react-native';
 
-export function MovableView({ enteredText, startingX, startingY, color }) {
-
-    // https://reactnative.dev/docs/panresponder
-
-    const posX = useRef(new Animated.Value(0)).current;
-    const posY = useRef(new Animated.Value(0)).current;
+export function MovableView({ startingX, startingY, enteredText, color }) {
+    const [position, setPosition] = useState({ x: startingX, y: startingY });
+    const [isVisible, setIsVisible] = useState(true);
 
     const panResponder = useRef(
         PanResponder.create({
-            onMoveShouldSetPanResponder: () => true,
-            onPanResponderMove: Animated.event([null, { dx: posX, dy: posY }], { useNativeDriver: false }
-            ),
-            onPanResponderRelease: () => {
-                posX.extractOffset();
-                posY.extractOffset();
+            onMoveShouldSetPanResponder: (_, gestureState) => {
+                return true; // Tillåt pan-respons
             },
-        }),
+
+            onPanResponderMove: (_, gestureState) => {
+                const newX = position.x + gestureState.dx;
+                const newY = position.y + gestureState.dy;
+
+                // Kontrollera om texten är inom bildens gränser
+                if (newX < 0 || newX +100 > 350 ||
+                     newY < 0 || newY +50 > 350
+                    ) {
+                    setIsVisible(false); // Texten försvinner om den flyttas utanför bilden
+                } else {
+                    setIsVisible(true); // Texten syns om den är inom bilden
+                    setPosition({ x: newX, y: newY }); // Uppdatera positionen
+                }
+            },
+            onPanResponderRelease: () => {
+                // Valfritt: spara den slutgiltiga positionen eller utför ytterligare åtgärder här
+            }
+        })
     ).current;
 
     return (
-        <View style={styles.movableContainer}>
-            <Animated.View
-                style={{
-                    transform: [
-                        { translateX: Animated.add(posX, startingX) },
-                        { translateY: Animated.add(posY, startingY) }
-                    ],
-                }}
-                {...panResponder.panHandlers}>
-                <Text style={{color: color}}>{enteredText ? enteredText : ""}</Text>
-            </Animated.View>
+        <View
+            {...panResponder.panHandlers}
+            style={[styles.movableContainer, { left: position.x, top: position.y }]}
+        >
+            {isVisible && (
+                <Text style={[styles.movableText, { color: color }]}>
+                    {enteredText}
+                </Text>
+            )}
         </View>
     );
-};
+}
 
-const styles = StyleSheet.create({
+// Kom ihåg att definiera stilarna nedan
+const styles = {
     movableContainer: {
-        position: 'absolute', // För att inte skapa "tomma" views i GenerateView
+        position: 'absolute',
     },
-
-});
-
+    movableText: {
+        // Här kan du definiera dina textstilar
+    }
+};
