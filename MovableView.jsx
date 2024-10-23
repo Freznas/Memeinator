@@ -1,7 +1,15 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Animated, View, StyleSheet, PanResponder, Text } from 'react-native';
 
-export function MovableView({ enteredText, startingX, startingY, color, position }) {
+export function MovableView({ enteredText, startingX, startingY, color, position, imgDim }) {
+
+/*     useEffect(() => {
+        imgWidth = imgDim.width
+        imgHeight = imgDim.height
+
+    }, []); */
+
+ 
 
     // https://reactnative.dev/docs/panresponder
 
@@ -18,6 +26,14 @@ export function MovableView({ enteredText, startingX, startingY, color, position
                 listener: (e, gestureState) => {
                     checkBounds(e, gestureState)
                     position({x: gestureState.moveX, y: gestureState.moveY})
+                    console.log(imgDim.x)
+                    console.log(imgDim.y)
+                    console.log(imgDim.width)
+                    console.log(imgDim.height)
+                    console.log(imgDim.pageX)
+                    console.log(imgDim.pageY)
+
+                    
 
                 }
             }),
@@ -31,14 +47,16 @@ export function MovableView({ enteredText, startingX, startingY, color, position
     // Kollar hårdkodade värden. Här behöver vi bildens position, bredd och höjd.
     // Alternativt göra bounds i GenerateView och skicka detta till GenerateView som ovan i properties.
     function checkBounds(_, gestureState) {
-        if (gestureState.moveX > 680) {
+         if (gestureState.moveX > imgDim.pageX + imgDim.width ||
+            gestureState.moveX < imgDim.pageX) {
             posX.setValue(0)
             posY.setValue(0)
         }
-        if (gestureState.moveX < 350) {
-            posX.setValue(0)
-            posY.setValue(0)
-        }
+        if(gestureState.moveY > imgDim.pageY + imgDim.height ||
+            gestureState.moveY < imgDim.pageY) {
+                posX.setValue(0)
+                posY.setValue(0)
+            }
     }
 
     return (

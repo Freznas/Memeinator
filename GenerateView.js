@@ -47,8 +47,24 @@ const [colors, setColors] = useState([]);
     const [selectedColor, setSelectedColor] = useState('#000000'); // 
   const [memes, setMemes] = useState([]);
 
+  //----------------------------------------------------------------------------------------------
   // Sätter imgage-dimensioner i onPress på en meme. 
-  const [imgDim, setImgDim] = useState({width: 0, height: 0})
+  const [imgDim, setImgDim] = useState({x: 0, y: 0, width: 0, height: 0, pageX: 0, pageY: 0})
+  const [imgRefSource, setImgRefSource] = useState("");
+  const imageRef = useRef(null);
+
+  const measureImagePosition = () => {
+    if (imageRef.current) {
+      // Använd ref för att mäta positionen
+      imageRef.current.measure((x, y, width, height, pageX, pageY) => {
+        console.log('x:', x, 'y:', y); // Position relativt föräldern
+        console.log('width:', width, 'height:', height); // Absolut position på skärmen
+        console.log('pageX:', pageX, 'pageY:', pageY); // Absolut position på skärmen
+        setImgDim({x: x, y: y, width: width, height: height, pageX: pageX, pageY: pageY})
+      });
+    }
+  };
+
   // Sätter position.
   const [position, setPosition] = useState({ x: 0, y: 0 });
 
@@ -57,6 +73,9 @@ const [colors, setColors] = useState([]);
   const positionChange = (newPosition) => {
     setPosition(newPosition);
   };
+
+
+   //----------------------------------------------------------------------------------------------
 
 
   useEffect(() => {
@@ -159,9 +178,13 @@ const [colors, setColors] = useState([]);
         <View style={styles.memeContainer}>
             {/* Sätter bild till den meme du klickar på. Finns ingen, väljs dummybild - JH */}
             <Image
-                source={currentMeme ? { uri: currentMeme.url } : imageSource}
+                
+                source={imgRefSource ? { uri: imgRefSource } : imageSource}
                 style={styles.imageStyle}
+                ref={imageRef}
                 resizeMode="contain"
+
+                onLoad={measureImagePosition}
 
             />
 
@@ -171,7 +194,7 @@ const [colors, setColors] = useState([]);
 
               <MovableView key={index} style={styles.overlayText}
               startingX={ 0 } startingY={ 50 + index * 40 }
-              enteredText={text} color={colors[index]} position={positionChange} />
+              enteredText={text} color={colors[index]} position={positionChange} imgDim={imgDim} />
 
             ))}
             </View>
@@ -187,15 +210,22 @@ const [colors, setColors] = useState([]);
                 <Pressable
                     onPress={() => {
                         setCurrentMeme(item);
+                        setImgRefSource(item.url);
+                        
+                        //Image-dimensioner
+
+                        //measureImagePosition();
+
+                        //setImgDim({width: item.width, height: item.height})
+                        
                         setTextFieldsCount(item.box_count);
                         setTexts(Array(item.box_count).fill(""));
                         setShowTextInput(true);
-                        //Image-dimensioner
-                        setImgDim({width: item.width, height: item.height})
+
                         console.log(imgDim.height)
                     }}
                 >
-                    <Image source={{ uri: item.url }} style={styles.memeScroll} />
+                    <Image  source={{ uri: item.url }} style={styles.memeScroll} />
                 </Pressable>
             )}
             ListEmptyComponent={<Text>Loading...</Text>}
