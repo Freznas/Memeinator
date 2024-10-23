@@ -53,7 +53,7 @@ const [colors, setColors] = useState([]);
   const [imgRefSource, setImgRefSource] = useState("");
   const imageRef = useRef(null);
 
-  const measureImagePosition = () => {
+  const imageAttributes = () => {
     if (imageRef.current) {
       // Använd ref för att mäta positionen
       imageRef.current.measure((x, y, width, height, pageX, pageY) => {
@@ -73,7 +73,6 @@ const [colors, setColors] = useState([]);
   const positionChange = (newPosition) => {
     setPosition(newPosition);
   };
-
 
    //----------------------------------------------------------------------------------------------
 
@@ -178,14 +177,11 @@ const [colors, setColors] = useState([]);
         <View style={styles.memeContainer}>
             {/* Sätter bild till den meme du klickar på. Finns ingen, väljs dummybild - JH */}
             <Image
-                
                 source={imgRefSource ? { uri: imgRefSource } : imageSource}
                 style={styles.imageStyle}
                 ref={imageRef}
                 resizeMode="contain"
-
-                onLoad={measureImagePosition}
-
+                onLoad={imageAttributes}
             />
 
             {/* Varje text som skrivs i inputs målas upp ovanpå memebilden, just nu bara på olika höjder av bilden.
@@ -210,19 +206,10 @@ const [colors, setColors] = useState([]);
                 <Pressable
                     onPress={() => {
                         setCurrentMeme(item);
-                        setImgRefSource(item.url);
-                        
-                        //Image-dimensioner
-
-                        //measureImagePosition();
-
-                        //setImgDim({width: item.width, height: item.height})
-                        
+                        setImgRefSource(item.url);                       
                         setTextFieldsCount(item.box_count);
                         setTexts(Array(item.box_count).fill(""));
                         setShowTextInput(true);
-
-                        console.log(imgDim.height)
                     }}
                 >
                     <Image  source={{ uri: item.url }} style={styles.memeScroll} />
