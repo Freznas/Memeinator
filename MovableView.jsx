@@ -53,7 +53,7 @@ export function MovableView({ enteredText, startingX, startingY, color, imgDim }
                     ], 
                 }}
                 {...panResponder.panHandlers}>
-                <Text style={{ color: color }}>{enteredText ? enteredText : ""}</Text>
+                <Text style={{ color: color , fontSize: 20 }}>{enteredText ? enteredText : ""}</Text>
             </Animated.View>
 
         </View>
@@ -65,8 +65,5 @@ const styles = {
     movableContainer: {
         position: 'absolute',
     },
-    movableText: {
-        fontSize: 30
-        // Här kan du definiera dina textstilar
-    }
+   
 };

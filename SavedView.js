@@ -21,12 +21,11 @@ export function SavedView() {
   const [selectedMeme, setSelectedMeme] = useState(null);
   const [downloadedFileUri, setDownloadedFileUri] = useState(null);
   
-  const downloadMeme = async (meme) => {
+  /*const downloadMeme = async (meme) => {
     console.log(meme.url)
+    
     try {
-      
-     // const asset = await Asset.fromModule(require(memeurl)); if u wanna download File from project
-        
+      const ass =  Asset.fromModule(require(memeurl)); //if u wanna download File from project
       // Request permission to access the media library (gallery)
     const { status } = await MediaLibrary.requestPermissionsAsync();
     if (status !== 'granted') {
@@ -35,10 +34,10 @@ export function SavedView() {
     }
 
     // Set the local file path where you want to save the image
-    const fileUri = FileSystem.documentDirectory + meme.id +".jpg";
+    const fileUri = FileSystem.documentDirectory + ass +".jpg";
 
 
-      const { uri } = await FileSystem.downloadAsync(meme.url, fileUri);
+      const { uri } = await FileSystem.downloadAsync(ass, fileUri);
       console.log('Image downloaded to:', uri);
   
       // Save the downloaded image to the media library
@@ -55,7 +54,7 @@ export function SavedView() {
     } catch (error) {
       console.error('Error downloading the image:', error);
     }
-};
+};*/
   // A function to load existing memes
 
   const loadMemes = async () => {
@@ -63,7 +62,6 @@ export function SavedView() {
       const storedMemes = await AsyncStorage.getItem("memesList");
       if (storedMemes !== null) {
         setMemeList(JSON.parse(storedMemes));
-        console.log(JSON.parse(storedMemes))
       }
     } catch (error) {
       console.error("Error loading memes:", error);
@@ -93,7 +91,6 @@ export function SavedView() {
         if (selectedMeme === meme) {
           setSelectedMeme(null); // Reset selection if the deleted meme was selected
         }
-        console.log(`${meme.url} Deleted`);
       }
     } else {
       // Use Alert for iOS and Android

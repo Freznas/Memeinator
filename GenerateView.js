@@ -41,7 +41,6 @@ export function GenerateView() {
   const [colors, setColors] = useState([]);
   const [isColorPickerVisible, setColorPickerVisible] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(null);
-  const [selectedColor, setSelectedColor] = useState("#000000");
   const [memes, setMemes] = useState([]);
 
   //START----------------------------------------------------------------------------------------------
@@ -59,9 +58,6 @@ export function GenerateView() {
   const imageAttributes = () => {
     if (imageRef.current) {
       imageRef.current.measure((x, y, width, height, pageX, pageY) => {
-        console.log('x:', x, 'y:', y);
-        console.log('width:', width, 'height:', height); //bredd och höjd på container
-        console.log('pageX:', pageX, 'pageY:', pageY); // Vänster övre hörn på container
 
         // Sätt dimensioner
         setImgDim({x: x, y: y, width: width, height: height, pageX: pageX, pageY: pageY})
@@ -72,27 +68,17 @@ export function GenerateView() {
 
 
   const viewShotRef = useRef(null); // Reference to capture the view
-  const [savedUri, setSavedUri] = useState(null); // State to hold the saved image URI
-
-  const fetchImageDimensions = (url) => {
-    Image.getSize(url, (width, height) => {
-      setImgDim({ width, height });
-    }, (error) => {
-      console.error("Error fetching image dimensions: ", error);
-    });
-  };
 
   useEffect(() => {
     const fetchTextFieldCount = () => {
       // Antalet hämtas från API anrop
-      const responseCount = 0;
-      // Uppdatera textFieldsCount med svaret
-      setTextFieldsCount(responseCount);
-      setTexts(Array(responseCount).fill(""));
-   
+     
     };
-    
     fetchTextFieldCount();
+    const responseCount = 0;
+    // Uppdatera textFieldsCount med svaret
+    setTextFieldsCount(responseCount);
+    setTexts(Array(responseCount).fill(""));
     fetchMemes();
     getMemesFromAsyncStorage();
   }, []);
@@ -145,19 +131,15 @@ export function GenerateView() {
 
   const saveMeme = async () => {
     try {
-    //    await AsyncStorage.clear()
      // Capture the view as a base64 image
-        const capturedImage = await viewShotRef.current.capture({
+         await viewShotRef.current.capture({
             format: 'jpg',
             quality: 0,
            // result: 'base64', // Store as base64 to save in AsyncStorage
             result: 'base64',
             snapshotContentContainer: true,
-useRenderInContext: true
+            useRenderInContext: true
           }).then(result => {
-            setSavedUri({result});
-          
-        //    console.log(result)
             const newMeme = {
                 // Generating a unique id for each meme
                 id: Date.now(),
@@ -169,19 +151,10 @@ useRenderInContext: true
               saveNewMeme(newMeme);
               setMemes((prevMemes) => [...prevMemes, newMeme]);
           })
-  
-        
-          
-         // Alert.alert('Image Saved', 'The captured image has been saved to AsyncStorage.');
-    
-          // Optionally display the saved image
-  
       } catch (error) {
         console.error('Error capturing and saving image:', error);
         Alert.alert('Error', 'Failed to capture and save image.');
       }
-     
-      getMemesFromAsyncStorage()
     };
 
   const getMemesFromAsyncStorage = async () => {
@@ -206,7 +179,7 @@ useRenderInContext: true
     >
         <Text style={styles.titleTextStyle}> Generate Your Own Memes </Text>
 
-        <ViewShot ref = {viewShotRef}  options={{ }}  style={styles.memeContainer} >
+        <ViewShot ref = {viewShotRef}  style={styles.memeContainer} >
             {/* Sätter bild till den meme du klickar på. Finns ingen, väljs dummybild - JH */}
             <Image
 //START----------------------------------------------------------------------------------------------
