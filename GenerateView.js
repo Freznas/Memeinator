@@ -58,7 +58,7 @@ const [colors, setColors] = useState([]);
   // Referens till bilden
   const imageRef = useRef(null);
 
-  // Beräknar bildens attribut med metoden measure från useRef().
+  // Beräknar bildens attribut "containerns" med metoden measure som kan användas till vissa View-element.
   const imageAttributes = () => {
     if (imageRef.current) {
       imageRef.current.measure((x, y, width, height, pageX, pageY) => {
