@@ -1,29 +1,28 @@
 import React, { useState, useRef } from 'react';
 import { View, Text, PanResponder } from 'react-native';
 
-export function MovableView({ startingX, startingY, enteredText, color }) {
-    const [position, setPosition] = useState({ x: startingX, y: startingY });
-    const [isVisible, setIsVisible] = useState(true);
+export function MovableView({ enteredText, startingX, startingY, color, imgDim }) {
+
+    // https://reactnative.dev/docs/panresponder
+
+    const posX = useRef(new Animated.Value(0)).current;
+    const posY = useRef(new Animated.Value(0)).current;
 
     const panResponder = useRef(
         PanResponder.create({
-            onMoveShouldSetPanResponder: (_, gestureState) => {
-                return true; // Tillåt pan-respons
-            },
+            onMoveShouldSetPanResponder: () => true,
+            onPanResponderMove: Animated.event([null, { dx: posX, dy: posY }], {
+                useNativeDriver: false,
 
-            onPanResponderMove: (_, gestureState) => {
-                const newX = position.x + gestureState.dx;
-                const newY = position.y + gestureState.dy;
-
-                // Kontrollera om texten är inom bildens gränser
-                if (newX < 0 || newX +100 > 350 ||
-                     newY < 0 || newY +50 > 350
-                    ) {
-                    setIsVisible(false); // Texten försvinner om den flyttas utanför bilden
-                } else {
-                    setIsVisible(true); // Texten syns om den är inom bilden
-                    setPosition({ x: newX, y: newY }); // Uppdatera positionen
+                // Listener skickar vidare gestureState till check bounds nedan
+                listener: (e, gestureState) => {
+                    checkBounds(e, gestureState)
                 }
+            }),
+            onPanResponderRelease: () => {
+                posX.extractOffset();
+                posY.extractOffset();
+
             },
             onPanResponderRelease: () => {
                 // Valfritt: spara den slutgiltiga positionen eller utför ytterligare åtgärder här
@@ -31,16 +30,35 @@ export function MovableView({ startingX, startingY, enteredText, color }) {
         })
     ).current;
 
+    // Kollar bounds för MovableView under tiden texten flyttas.
+    // Den faktiska X,Y-positionen (pageX och pageY) för contanern i bilden via props.
+    function checkBounds(_, gestureState) {
+        if (gestureState.moveX > imgDim.pageX + imgDim.width ||
+            gestureState.moveX < imgDim.pageX) {
+            posX.setValue(0)
+            posY.setValue(0)
+        }
+        if (gestureState.moveY > imgDim.pageY + imgDim.height ||
+            gestureState.moveY < imgDim.pageY) {
+            posX.setValue(0)
+            posY.setValue(0)
+        }
+    }
+
     return (
-        <View
-            {...panResponder.panHandlers}
-            style={[styles.movableContainer, { left: position.x, top: position.y }]}
-        >
-            {isVisible && (
-                <Text style={[styles.movableText, { color: color }]}>
-                    {enteredText}
-                </Text>
-            )}
+
+        <View style={styles.movableContainer}>
+            <Animated.View
+                style={{
+                    transform: [
+                        { translateX: Animated.add(posX, startingX) },
+                        { translateY: Animated.add(posY, startingY) }
+                    ], 
+                }}
+                {...panResponder.panHandlers}>
+                <Text style={{ color: color }}>{enteredText ? enteredText : ""}</Text>
+            </Animated.View>
+
         </View>
     );
 }
