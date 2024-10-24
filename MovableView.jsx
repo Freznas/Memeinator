@@ -1,5 +1,5 @@
-import React, { useRef } from 'react';
-import { Animated, View, StyleSheet, PanResponder, Text } from 'react-native';
+import React, { useState, useRef } from 'react';
+import { View, Text, PanResponder } from 'react-native';
 
 export function MovableView({ enteredText, startingX, startingY, color, imgDim }) {
 
@@ -22,8 +22,12 @@ export function MovableView({ enteredText, startingX, startingY, color, imgDim }
             onPanResponderRelease: () => {
                 posX.extractOffset();
                 posY.extractOffset();
+
             },
-        }),
+            onPanResponderRelease: () => {
+                // Valfritt: spara den slutgiltiga positionen eller utför ytterligare åtgärder här
+            }
+        })
     ).current;
 
     // Kollar bounds för MovableView under tiden texten flyttas.
@@ -42,6 +46,7 @@ export function MovableView({ enteredText, startingX, startingY, color, imgDim }
     }
 
     return (
+
         <View style={styles.movableContainer}>
             <Animated.View
                 style={{
@@ -53,14 +58,17 @@ export function MovableView({ enteredText, startingX, startingY, color, imgDim }
                 {...panResponder.panHandlers}>
                 <Text style={{ color: color }}>{enteredText ? enteredText : ""}</Text>
             </Animated.View>
+
         </View>
     );
-};
+}
 
-const styles = StyleSheet.create({
+// Kom ihåg att definiera stilarna nedan
+const styles = {
     movableContainer: {
-        position: 'absolute'
+        position: 'absolute',
     },
-
-});
-
+    movableText: {
+        // Här kan du definiera dina textstilar
+    }
+};

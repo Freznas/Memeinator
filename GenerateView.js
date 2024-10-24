@@ -1,4 +1,3 @@
-
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
   View,
@@ -8,7 +7,7 @@ import {
   Image,
   TextInput,
   Pressable,
-  Modal
+  Modal,
 } from "react-native";
 import { FlatList } from "react-native";
 import { useState, useEffect, useRef } from "react";
@@ -16,6 +15,7 @@ import { ScrollView } from "react-native";
 import { ApiHandler } from "./ApiHandler";
 import { LinearGradient } from "expo-linear-gradient";
 import { DiscardButtonAnimation } from "./ButtonAnimation";
+
 import Slider from '@react-native-community/slider'; // Vi måste importera denna för vi måste ska kunna dölja den
 import { ColorPicker } from 'react-native-color-picker';
 import { MovableView } from "./MovableView";
@@ -23,15 +23,11 @@ import { MovableView } from "./MovableView";
 // Dummybild som används tillfälligt
 const localImage = require("./assets/memeinator.png");
 
-// Skapar en array av dummybilden (behövs?)
-const dummyImageData = new Array(10).fill(localImage);
-
 // här vi gör en osynlig slider för pickern krävde en slider. rör ej!
 const DummySlider = () => {
-    return <View style={{ height: 0, width: 0 }} />;
+  return <View style={{ height: 0, width: 0 }} />;
 };
 export default DummySlider;
-
 
 export function GenerateView() {
   // Hämtar data och fetchMemes() från ApiHandler
@@ -41,10 +37,10 @@ export function GenerateView() {
   const [textFieldsCount, setTextFieldsCount] = useState(0);
   const [imageSource, setImageSource] = useState(localImage);
   const [showTextInput, setShowTextInput] = useState(true);
-const [colors, setColors] = useState([]);
-    const [isColorPickerVisible, setColorPickerVisible] = useState(false);
-    const [selectedIndex, setSelectedIndex] = useState(null); //följ vilken input färg som ändras
-    const [selectedColor, setSelectedColor] = useState('#000000'); // 
+  const [colors, setColors] = useState([]);
+  const [isColorPickerVisible, setColorPickerVisible] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState(null);
+  const [selectedColor, setSelectedColor] = useState("#000000");
   const [memes, setMemes] = useState([]);
 
   //START----------------------------------------------------------------------------------------------
@@ -74,6 +70,16 @@ const [colors, setColors] = useState([]);
    //END----------------------------------------------------------------------------------------------
 
 
+
+
+  const fetchImageDimensions = (url) => {
+    Image.getSize(url, (width, height) => {
+      setImgDim({ width, height });
+    }, (error) => {
+      console.error("Error fetching image dimensions: ", error);
+    });
+  };
+
   useEffect(() => {
     const fetchTextFieldCount = () => {
       // Antalet hämtas från API anrop
@@ -81,7 +87,9 @@ const [colors, setColors] = useState([]);
       // Uppdatera textFieldsCount med svaret
       setTextFieldsCount(responseCount);
       setTexts(Array(responseCount).fill(""));
+   
     };
+    
     fetchTextFieldCount();
     fetchMemes();
     getMemesFromAsyncStorage();
@@ -95,49 +103,55 @@ const [colors, setColors] = useState([]);
     // Uppdaterar state med den nya texts-arrayen.
     setTexts(newTexts);
   };
-  
-    const handleColorChange = (selectedColor, index) => {
-        const newColors = [...colors];
-        newColors[index] = selectedColor;
-        setColors(newColors);
 
-    };
+  const handleColorChange = (selectedColor, index) => {
+    const newColors = [...colors];
+    newColors[index] = selectedColor;
+    setColors(newColors);
+  };
 
-    const openColorPicker = (index) => {
-        setSelectedIndex(index);  // koppla färg till vald input index
-        setColorPickerVisible(true);  // visa colorPicker modalen
+  const openColorPicker = (index) => {
+    setSelectedIndex(index); // koppla färg till vald input index
+    setColorPickerVisible(true); // visa colorPicker modalen
+  };
 
-    };
+  const closeColorPicker = () => {
+    setColorPickerVisible(false); //Dölj colorPicker modalen
+  };
 
-    const closeColorPicker = () => {
-        setColorPickerVisible(false);  //Dölj colorPicker modalen
-    };
+  //Nollställer textArrayen vid discard
+  const handleDiscard = () => {
+    setTexts(Array(textFieldsCount).fill(""));
+    setCurrentMeme(null);
+    setImageSource(localImage);
+    setShowTextInput(false);
+  };
 
-
-    //Nollställer textArrayen vid discard
-    const handleDiscard = () => {
-        setTexts(Array(textFieldsCount).fill(""))
-        setCurrentMeme(null)
-        setImageSource(localImage)
-        setShowTextInput(false)
-    }
-
-
-  const saveMemeInAsyncStorage = async () => {
-    // Generating a unique id for each meme
-    const memeToSave = { id: Date.now(), url: currentMeme.url, texts: texts };
-    // Create array with new meme
-    const updatedMemes = [...memes, memeToSave];
-    setMemes(updatedMemes);
-
+  const saveNewMeme = async (newMeme) => {
     try {
+      const storedMemes = await AsyncStorage.getItem("memesList");
+      const memeList = storedMemes ? JSON.parse(storedMemes) : [];
+      // Create array with new meme
+      const updatedList = [...memeList, newMeme];
       // Put array in storage
-      await AsyncStorage.setItem("memesList", JSON.stringify(updatedMemes));
-      console.log("Meme Saved!");
+      await AsyncStorage.setItem("memesList", JSON.stringify(updatedList));
       alert("Meme Saved!");
     } catch (error) {
-      console.error("Error saving Meme:", error);
+      console.error("Error saving new meme:", error);
     }
+  };
+
+  const saveMeme = async () => {
+    const newMeme = {
+      // Generating a unique id for each meme
+      id: Date.now(),
+      url: currentMeme.url,
+      texts: texts,
+      colors: colors,
+    };
+
+    saveNewMeme(newMeme);
+    setMemes((prevMemes) => [...prevMemes, newMeme]);
   };
 
   const getMemesFromAsyncStorage = async () => {
@@ -146,26 +160,20 @@ const [colors, setColors] = useState([]);
       const storedMemes = await AsyncStorage.getItem("memesList");
       if (storedMemes !== null) {
         setMemes(JSON.parse(storedMemes));
-        console.log(
-          "Retrieved memes from asyncStorage:",
-          JSON.parse(storedMemes)
-        );
-      } else {
-        console.log("Async Storage contains no memes");
       }
     } catch (error) {
       console.error("Error retrieving memes:", error);
     }
   };
 
-
   return (
     <LinearGradient
-        colors={['#00D9E1', '#133CE3', '#8D4EFA']} // Gradient colors
-        start={{ x: 0.3, y: 0 }}
-        end={{ x: 0.7, y: 1 }}
-        style={styles.container}
+      colors={["#00D9E1", "#133CE3", "#8D4EFA"]} // Gradient colors
+      start={{ x: 0.3, y: 0 }}
+      end={{ x: 0.7, y: 1 }}
+      style={styles.container}
     >
+
         <Text style={styles.titleTextStyle}> Generate Your Own Memes </Text>
 
         <View style={styles.memeContainer}>
@@ -178,15 +186,17 @@ const [colors, setColors] = useState([]);
                 ref={imageRef} 
                 // Beräkna bildens attribut vid load-event när den laddas in i Image.
                 onLoad={imageAttributes}
-//END----------------------------------------------------------------------------------------------
 
                 style={styles.imageStyle}
                 resizeMode="contain"
+//END----------------------------------------------------------------------------------------------
+
             />
 
             {/* Varje text som skrivs i inputs målas upp ovanpå memebilden, just nu bara på olika höjder av bilden.
             Ska anpassas efter vilka kordinater som hämtas i APIn */}
             {texts.map((text, index ) => ( 
+
 
  //START----------------------------------------------------------------------------------------------
             //ImgDim skickas via props till MovableView
@@ -195,13 +205,13 @@ const [colors, setColors] = useState([]);
               enteredText={text} color={colors[index]} imgDim={imgDim} />
  //END----------------------------------------------------------------------------------------------
 
+
+              
             ))}
             </View>
-            
-            <View>
-        </View> 
 
-        <FlatList
+            <FlatList
+
             data={data}
             horizontal={true}
             keyExtractor={(item) => item.id.toString()}
@@ -213,6 +223,7 @@ const [colors, setColors] = useState([]);
                         setTextFieldsCount(item.box_count);
                         setTexts(Array(item.box_count).fill(""));
                         setShowTextInput(true);
+                        setImgDim({width: item.width,height: item.height})
                     }}
                 >
                     <Image  source={{ uri: item.url }} style={styles.memeScroll} />
@@ -221,7 +232,7 @@ const [colors, setColors] = useState([]);
             ListEmptyComponent={<Text>Loading...</Text>}
             style={styles.listStyle}
         />
-
+   
         <ScrollView style={styles.scrollView}>
             {/* Skapar visst antal textinputs baserat på värdet av textfieldCount, detta baseras också på APIns hämtning. */}
             {showTextInput &&
@@ -261,14 +272,13 @@ const [colors, setColors] = useState([]);
                         <View style={styles.buttonsContainer}>
                             <Pressable
                                 style={styles.colorButton}
-                                onPress={() => handleColorChange('#000000', selectedIndex)}
-                            >
+                                onPress={() => [handleColorChange('#000000', selectedIndex),  closeColorPicker()]}                            >
                                 <Text style={styles.colorButtonText}>Black</Text>
                             </Pressable>
                             <Pressable
                                 style={styles.colorButton}
-                                onPress={() => handleColorChange('#FFFFFF', selectedIndex)}
-                            >
+                                onPress={() => [handleColorChange('#FFFFFF', selectedIndex),  closeColorPicker()]}
+                                                            >
                                 <Text style={styles.colorButtonText}>White</Text>
                             </Pressable>
                         </View>
@@ -279,27 +289,27 @@ const [colors, setColors] = useState([]);
                     </Pressable>
                 </View>
             </Modal>
+            
         )}
 
         <View style={styles.buttonContainer}>
-            <DiscardButtonAnimation
-                onPress={handleDiscard}
-                buttonText="Discard"
-                buttonStyle={styles.pressableStyle}
-                textStyle={styles.buttonTextStyle}
-                >
-            </DiscardButtonAnimation>
+        <DiscardButtonAnimation
+          onPress={handleDiscard}
+          buttonText="Discard"
+          buttonStyle={styles.pressableStyle}
+          textStyle={styles.buttonTextStyle}
+        />
 
-            <Pressable style={styles.pressableStyleSave} onPress={() => saveMemeInAsyncStorage()} >
-                <Text style={styles.buttonTextStyle}>Save</Text>
-            </Pressable>
-        </View>
+        <Pressable style={styles.pressableStyleSave} onPress={saveMeme}>
+          <Text style={styles.buttonTextStyle}>Save</Text>
+        </Pressable>
+      </View>
     </LinearGradient>
-);
+  );
 }
 
-
 const styles = StyleSheet.create({
+
 
     //Style för hela skärmen
     container: {
@@ -368,6 +378,7 @@ const styles = StyleSheet.create({
         marginTop: 10,
         backgroundColor: 'white',
         borderRadius: 5,
+        marginRight:5
     },
 
     //Style för buttonContainer
@@ -426,23 +437,24 @@ const styles = StyleSheet.create({
     }, colorButton: {
         backgroundColor: "lightgray",
         padding: 10,
-        magin: 10,
+        margin: 10,
         borderRadius: 5,
         margintop: 10,
+       
     },
     //Knapp För att öppna colorPicker.
     colorPickButton: {
         padding: 10,
         marginLeft: 10,
         borderRadius: 5,
-        margintop: 10,
-        height: 15,
-        width: 15,
+        margintop: 15,
+        height: 25,
+      
     },
     // Gradient för knapp till öppna colorPicker
     colorButtonGradient: {
-        borderRadius: 5,
-        padding: 10,
+        borderRadius: 100,
+        padding: 1,
     },
    // mörklägger bakgrunden när man öppnar ColorPicker
     modalContainer: {
