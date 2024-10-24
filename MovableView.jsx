@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { View, Text, PanResponder } from 'react-native';
+import { View, Text, PanResponder,Animated } from 'react-native';
 
 export function MovableView({ enteredText, startingX, startingY, color, imgDim }) {
 
@@ -22,12 +22,9 @@ export function MovableView({ enteredText, startingX, startingY, color, imgDim }
             onPanResponderRelease: () => {
                 posX.extractOffset();
                 posY.extractOffset();
-
-            },
-            onPanResponderRelease: () => {
-                // Valfritt: spara den slutgiltiga positionen eller utför ytterligare åtgärder här
             }
-        })
+            })
+            
     ).current;
 
     // Kollar bounds för MovableView under tiden texten flyttas.
