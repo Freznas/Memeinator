@@ -43,7 +43,33 @@ export function GenerateView() {
   const [selectedIndex, setSelectedIndex] = useState(null);
   const [selectedColor, setSelectedColor] = useState("#000000");
   const [memes, setMemes] = useState([]);
-  const [imgDim, setImgDim] = useState({width: 0, height: 0})
+
+  //START----------------------------------------------------------------------------------------------
+  // Image-dimensioner - Skickas till MoavableView
+  const [imgDim, setImgDim] = useState({x: 0, y: 0, width: 0, height: 0, pageX: 0, pageY: 0})
+
+  // Dynamsik sträng-referens för den bild som väljs, värden är densamma ändå, men mest för att
+  // värden ska kännas av till Movable beroende på vald bild.
+  const [imgRefSource, setImgRefSource] = useState("");
+
+  // Referens till bilden
+  const imageRef = useRef(null);
+
+  // Beräknar bildens attribut "containerns" med metoden measure som kan användas till vissa View-element.
+  const imageAttributes = () => {
+    if (imageRef.current) {
+      imageRef.current.measure((x, y, width, height, pageX, pageY) => {
+        console.log('x:', x, 'y:', y);
+        console.log('width:', width, 'height:', height); //bredd och höjd på container
+        console.log('pageX:', pageX, 'pageY:', pageY); // Vänster övre hörn på container
+
+        // Sätt dimensioner
+        setImgDim({x: x, y: y, width: width, height: height, pageX: pageX, pageY: pageY})
+      });
+    }
+  };
+   //END----------------------------------------------------------------------------------------------
+
 
   const viewShotRef = useRef(null); // Reference to capture the view
   const [savedUri, setSavedUri] = useState(null); // State to hold the saved image URI
@@ -183,29 +209,38 @@ useRenderInContext: true
         <ViewShot ref = {viewShotRef}  options={{ }}  style={styles.memeContainer} >
             {/* Sätter bild till den meme du klickar på. Finns ingen, väljs dummybild - JH */}
             <Image
-                source={currentMeme ? { uri: currentMeme.url } : imageSource}
+//START----------------------------------------------------------------------------------------------
+                // Sträng-källan till vald bild
+                source={imgRefSource ? { uri: imgRefSource } : imageSource}
+                // Referensen till bilden blir den valda memen
+                ref={imageRef} 
+                // Beräkna bildens attribut vid load-event när den laddas in i Image.
+                onLoad={imageAttributes}
+
                 style={styles.imageStyle}
                 resizeMode="contain"
-               
+//END----------------------------------------------------------------------------------------------
+
             />
             {/* Varje text som skrivs i inputs målas upp ovanpå memebilden, just nu bara på olika höjder av bilden.
             Ska anpassas efter vilka kordinater som hämtas i APIn */}
              {texts.map((text, index ) => ( 
 
 
+ //START----------------------------------------------------------------------------------------------
+            //ImgDim skickas via props till MovableView
               <MovableView key={index} style={styles.overlayText}
-              startingX={ 100 } 
-              startingY={ 50 + index * 40 }
-              enteredText={text} 
-              color={colors[index]}
-              imgDim={imgDim}
-             />
+              startingX={ 0 } startingY={ 50 + index * 40 }
+              enteredText={text} color={colors[index]} imgDim={imgDim} />
+ //END----------------------------------------------------------------------------------------------
+
 
               
             ))}
         </ViewShot>
       
             <FlatList
+
             data={data}
             horizontal={true}
             keyExtractor={(item) => item.id.toString()}
@@ -213,13 +248,14 @@ useRenderInContext: true
                 <Pressable
                     onPress={() => {
                         setCurrentMeme(item);
+                        setImgRefSource(item.url);                       
                         setTextFieldsCount(item.box_count);
                         setTexts(Array(item.box_count).fill(""));
                         setShowTextInput(true);
-                        setImgDim({width: item.width,height: item.height})
+                        
                     }}
                 >
-                    <Image source={{ uri: item.url }} style={styles.memeScroll} />
+                    <Image  source={{ uri: item.url }} style={styles.memeScroll} />
                 </Pressable>
             )}
             ListEmptyComponent={<Text>Loading...</Text>}
@@ -236,6 +272,7 @@ useRenderInContext: true
                             placeholder={`Enter text ${index + 1}`}
                             value={texts[index]}
                             onChangeText={(text) => handleTextChange(text, index)}
+                             
                         />
                         <LinearGradient
                             colors={['#f43b47', '#0ba360']}
