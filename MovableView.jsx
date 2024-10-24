@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import { Animated, View, StyleSheet, PanResponder, Text } from 'react-native';
 
-export function MovableView({ enteredText, startingX, startingY, color, position, imgDim }) {
+export function MovableView({ enteredText, startingX, startingY, color, imgDim }) {
 
     // https://reactnative.dev/docs/panresponder
 
@@ -14,16 +14,9 @@ export function MovableView({ enteredText, startingX, startingY, color, position
             onPanResponderMove: Animated.event([null, { dx: posX, dy: posY }], {
                 useNativeDriver: false,
 
-                // listener skickar vidare gestureState till check bounds nedan
+                // Listener skickar vidare gestureState till check bounds nedan
                 listener: (e, gestureState) => {
                     checkBounds(e, gestureState)
-                    position({ x: gestureState.moveX, y: gestureState.moveY })
-                    console.log(imgDim.x)
-                    console.log(imgDim.y)
-                    console.log(imgDim.width)
-                    console.log(imgDim.height)
-                    console.log(imgDim.pageX)
-                    console.log(imgDim.pageY)
                 }
             }),
             onPanResponderRelease: () => {
@@ -33,8 +26,8 @@ export function MovableView({ enteredText, startingX, startingY, color, position
         }),
     ).current;
 
-    // Kollar hårdkodade värden. Här behöver vi bildens position, bredd och höjd.
-    // Alternativt göra bounds i GenerateView och skicka detta till GenerateView som ovan i properties.
+    // Kollar bounds för MovableView under tiden texten flyttas.
+    // Den faktiska X,Y-positionen (pageX och pageY) för contanern i bilden via props.
     function checkBounds(_, gestureState) {
         if (gestureState.moveX > imgDim.pageX + imgDim.width ||
             gestureState.moveX < imgDim.pageX) {
@@ -55,7 +48,7 @@ export function MovableView({ enteredText, startingX, startingY, color, position
                     transform: [
                         { translateX: Animated.add(posX, startingX) },
                         { translateY: Animated.add(posY, startingY) }
-                    ],
+                    ], 
                 }}
                 {...panResponder.panHandlers}>
                 <Text style={{ color: color }}>{enteredText ? enteredText : ""}</Text>
@@ -66,7 +59,7 @@ export function MovableView({ enteredText, startingX, startingY, color, position
 
 const styles = StyleSheet.create({
     movableContainer: {
-        position: 'absolute', // För att inte skapa "tomma" views i GenerateView
+        position: 'absolute'
     },
 
 });

@@ -47,34 +47,31 @@ const [colors, setColors] = useState([]);
     const [selectedColor, setSelectedColor] = useState('#000000'); // 
   const [memes, setMemes] = useState([]);
 
-  //----------------------------------------------------------------------------------------------
-  // Sätter imgage-dimensioner i onPress på en meme. 
+  //START----------------------------------------------------------------------------------------------
+  // Image-dimensioner - Skickas till MoavableView
   const [imgDim, setImgDim] = useState({x: 0, y: 0, width: 0, height: 0, pageX: 0, pageY: 0})
+
+  // Dynamsik sträng-referens för den bild som väljs, värden är densamma ändå, men mest för att
+  // värden ska kännas av till Movable beroende på vald bild.
   const [imgRefSource, setImgRefSource] = useState("");
+
+  // Referens till bilden
   const imageRef = useRef(null);
 
+  // Beräknar bildens attribut med metoden measure från useRef().
   const imageAttributes = () => {
     if (imageRef.current) {
-      // Använd ref för att mäta positionen
       imageRef.current.measure((x, y, width, height, pageX, pageY) => {
-        console.log('x:', x, 'y:', y); // Position relativt föräldern
-        console.log('width:', width, 'height:', height); // Absolut position på skärmen
-        console.log('pageX:', pageX, 'pageY:', pageY); // Absolut position på skärmen
+        console.log('x:', x, 'y:', y);
+        console.log('width:', width, 'height:', height); //bredd och höjd på container
+        console.log('pageX:', pageX, 'pageY:', pageY); // Vänster övre hörn på container
+
+        // Sätt dimensioner
         setImgDim({x: x, y: y, width: width, height: height, pageX: pageX, pageY: pageY})
       });
     }
   };
-
-  // Sätter position.
-  const [position, setPosition] = useState({ x: 0, y: 0 });
-
-  // Hanterar position på texten nedan i MovableView på rad 172 och skickar detta via properties.
-  // Används bara till att skriva ut position just nu på rad 152.
-  const positionChange = (newPosition) => {
-    setPosition(newPosition);
-  };
-
-   //----------------------------------------------------------------------------------------------
+   //END----------------------------------------------------------------------------------------------
 
 
   useEffect(() => {
@@ -174,20 +171,29 @@ const [colors, setColors] = useState([]);
         <View style={styles.memeContainer}>
             {/* Sätter bild till den meme du klickar på. Finns ingen, väljs dummybild - JH */}
             <Image
+//START----------------------------------------------------------------------------------------------
+                // Sträng-källan till vald bild
                 source={imgRefSource ? { uri: imgRefSource } : imageSource}
-                style={styles.imageStyle}
-                ref={imageRef}
-                resizeMode="contain"
+                // Referensen till bilden blir den valda memen
+                ref={imageRef} 
+                // Beräkna bildens attribut vid load-event när den laddas in i Image.
                 onLoad={imageAttributes}
+//END----------------------------------------------------------------------------------------------
+
+                style={styles.imageStyle}
+                resizeMode="contain"
             />
 
             {/* Varje text som skrivs i inputs målas upp ovanpå memebilden, just nu bara på olika höjder av bilden.
             Ska anpassas efter vilka kordinater som hämtas i APIn */}
             {texts.map((text, index ) => ( 
 
+ //START----------------------------------------------------------------------------------------------
+            //ImgDim skickas via props till MovableView
               <MovableView key={index} style={styles.overlayText}
               startingX={ 0 } startingY={ 50 + index * 40 }
-              enteredText={text} color={colors[index]} position={positionChange} imgDim={imgDim} />
+              enteredText={text} color={colors[index]} imgDim={imgDim} />
+ //END----------------------------------------------------------------------------------------------
 
             ))}
             </View>
@@ -315,14 +321,6 @@ const styles = StyleSheet.create({
         color: 'white',
         fontSize: 25
     },
-
-    //Style för "choose your meme" text <-- Do we need this text here? - Juhee
-    // underTitleTextStyle: {
-    //     marginTop: 10,
-    //     fontWeight: 'normal',
-    //     color: 'white',
-    //     fontSize: 18
-    // },
 
     //Style för den bild som visar den skapade memen med text
     imageStyle: {
