@@ -15,7 +15,8 @@ import { ScrollView } from "react-native";
 import { ApiHandler } from "./ApiHandler";
 import { LinearGradient } from "expo-linear-gradient";
 import { DiscardButtonAnimation } from "./ButtonAnimation";
-
+import ViewShot from 'react-native-view-shot'; // For capturing the view
+import * as FileSystem from 'expo-file-system'; // For saving the file
 import Slider from '@react-native-community/slider'; // Vi måste importera denna för vi måste ska kunna dölja den
 import { ColorPicker } from 'react-native-color-picker';
 import { MovableView } from "./MovableView";
@@ -44,7 +45,8 @@ export function GenerateView() {
   const [memes, setMemes] = useState([]);
   const [imgDim, setImgDim] = useState({width: 0, height: 0})
 
-
+  const viewShotRef = useRef(null); // Reference to capture the view
+  const [savedUri, setSavedUri] = useState(null); // State to hold the saved image URI
 
   const fetchImageDimensions = (url) => {
     Image.getSize(url, (width, height) => {
@@ -116,17 +118,45 @@ export function GenerateView() {
   };
 
   const saveMeme = async () => {
-    const newMeme = {
-      // Generating a unique id for each meme
-      id: Date.now(),
-      url: currentMeme.url,
-      texts: texts,
-      colors: colors,
+    try {
+    //    await AsyncStorage.clear()
+     // Capture the view as a base64 image
+        const capturedImage = await viewShotRef.current.capture({
+            format: 'jpg',
+            quality: 0,
+           // result: 'base64', // Store as base64 to save in AsyncStorage
+            result: 'base64',
+            snapshotContentContainer: true,
+useRenderInContext: true
+          }).then(result => {
+            setSavedUri({result});
+          
+        //    console.log(result)
+            const newMeme = {
+                // Generating a unique id for each meme
+                id: Date.now(),
+                url: result,
+                texts: result,
+                colors: colors,
+              };
+          
+              saveNewMeme(newMeme);
+              setMemes((prevMemes) => [...prevMemes, newMeme]);
+          })
+  
+        
+          
+         // Alert.alert('Image Saved', 'The captured image has been saved to AsyncStorage.');
+    
+          // Optionally display the saved image
+  
+      } catch (error) {
+        console.error('Error capturing and saving image:', error);
+        Alert.alert('Error', 'Failed to capture and save image.');
+      }
+     
+      getMemesFromAsyncStorage()
     };
-
-    saveNewMeme(newMeme);
-    setMemes((prevMemes) => [...prevMemes, newMeme]);
-  };
 
   const getMemesFromAsyncStorage = async () => {
     try {
@@ -134,6 +164,7 @@ export function GenerateView() {
       const storedMemes = await AsyncStorage.getItem("memesList");
       if (storedMemes !== null) {
         setMemes(JSON.parse(storedMemes));
+        console.log(JSON.parse(storedMemes))
       }
     } catch (error) {
       console.error("Error retrieving memes:", error);
@@ -147,10 +178,9 @@ export function GenerateView() {
       end={{ x: 0.7, y: 1 }}
       style={styles.container}
     >
-
         <Text style={styles.titleTextStyle}> Generate Your Own Memes </Text>
 
-        <View style={styles.memeContainer}>
+        <ViewShot ref = {viewShotRef}  options={{ }}  style={styles.memeContainer} >
             {/* Sätter bild till den meme du klickar på. Finns ingen, väljs dummybild - JH */}
             <Image
                 source={currentMeme ? { uri: currentMeme.url } : imageSource}
@@ -158,10 +188,9 @@ export function GenerateView() {
                 resizeMode="contain"
                
             />
-
             {/* Varje text som skrivs i inputs målas upp ovanpå memebilden, just nu bara på olika höjder av bilden.
             Ska anpassas efter vilka kordinater som hämtas i APIn */}
-            {texts.map((text, index ) => ( 
+             {texts.map((text, index ) => ( 
 
 
               <MovableView key={index} style={styles.overlayText}
@@ -174,7 +203,8 @@ export function GenerateView() {
 
               
             ))}
-            </View>
+        </ViewShot>
+      
             <FlatList
             data={data}
             horizontal={true}
@@ -298,6 +328,7 @@ const styles = StyleSheet.create({
     imageStyle: {
         width: 350,
         height: 350,
+        resizeMode: 'cover'
     },
 
     //Style för bilder i listan där hämtade memes visas
@@ -319,7 +350,8 @@ const styles = StyleSheet.create({
     memeContainer: {
         position: "relative",
         alignItems: "center",
-
+       backgroundColor: "transparent"
+            
     },
 
     //Style för texten ovanpå meme
@@ -327,7 +359,7 @@ const styles = StyleSheet.create({
         position: "absolute",
         color: "black",
         fontSize: 25,
-        backgroundColor: 'transparent',
+       backgroundColor: 'transparent',
         padding: 5,
         borderRadius: 5,
     },
@@ -386,7 +418,7 @@ const styles = StyleSheet.create({
         height: 70,
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: 'white'
+      backgroundColor: 'white'
     },
 
     colorPicker: {

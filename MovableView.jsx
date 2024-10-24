@@ -51,6 +51,7 @@ const styles = {
         position: 'absolute',
     },
     movableText: {
+        fontSize: 30
         // Här kan du definiera dina textstilar
     }
 };

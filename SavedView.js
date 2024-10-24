@@ -63,6 +63,7 @@ export function SavedView() {
       const storedMemes = await AsyncStorage.getItem("memesList");
       if (storedMemes !== null) {
         setMemeList(JSON.parse(storedMemes));
+        console.log(JSON.parse(storedMemes))
       }
     } catch (error) {
       console.error("Error loading memes:", error);
@@ -147,7 +148,7 @@ export function SavedView() {
         {memeList.map((meme, index) => (
           <View key={index} style={styles.itemContainer}>
             <Pressable onPress={() => toggleSelectMeme(meme)}>
-              <Image source={{ uri: meme.url }} style={styles.image} />
+              <Image source={{ uri: meme.url }} style={styles.image} resizeMode="contain"/>
               {selectedMeme === meme && (
                 <View style={styles.overlay}>
                   <Pressable
