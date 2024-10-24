@@ -223,7 +223,7 @@ export function GenerateView() {
                         setTextFieldsCount(item.box_count);
                         setTexts(Array(item.box_count).fill(""));
                         setShowTextInput(true);
-                        setImgDim({width: item.width,height: item.height})
+                        
                     }}
                 >
                     <Image  source={{ uri: item.url }} style={styles.memeScroll} />
