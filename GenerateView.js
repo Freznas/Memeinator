@@ -17,21 +17,22 @@ import { LinearGradient } from "expo-linear-gradient";
 import { DiscardButtonAnimation } from "./ButtonAnimation";
 import ViewShot from 'react-native-view-shot'; // For capturing the view
 import * as FileSystem from 'expo-file-system'; // For saving the file
-import Slider from '@react-native-community/slider'; // Vi måste importera denna för vi måste ska kunna dölja den
+import Slider from '@react-native-community/slider'; // Import required for implementing dummy slider
 import { ColorPicker } from 'react-native-color-picker';
 import { MovableView } from "./MovableView";
 
-// Dummybild som används tillfälligt
+// Logo
 const localImage = require("./assets/memeinator.png");
 
-// här vi gör en osynlig slider för pickern krävde en slider. rör ej!
+
+// Creating a invisible slider because color-picker required a slider component.see row: 273 (DO NOT TOUCH!)
 const DummySlider = () => {
   return <View style={{ height: 0, width: 0 }} />;
 };
 export default DummySlider;
 
 export function GenerateView() {
-  // Hämtar data och fetchMemes() från ApiHandler
+  // Retrieving data and fetchMemes() from ApiHandler
   const { data, fetchMemes } = ApiHandler();
   const [currentMeme, setCurrentMeme] = useState(null);
   const [texts, setTexts] = useState([]);
@@ -43,40 +44,34 @@ export function GenerateView() {
   const [selectedIndex, setSelectedIndex] = useState(null);
   const [memes, setMemes] = useState([]);
 
-  //START----------------------------------------------------------------------------------------------
-  // Image-dimensioner - Skickas till MoavableView
+  //Image Dimensions- sends to MovableView
   const [imgDim, setImgDim] = useState({x: 0, y: 0, width: 0, height: 0, pageX: 0, pageY: 0})
 
-  // Dynamsik sträng-referens för den bild som väljs, värden är densamma ändå, men mest för att
-  // värden ska kännas av till Movable beroende på vald bild.
+
   const [imgRefSource, setImgRefSource] = useState("");
 
-  // Referens till bilden
+  // Referens to the image
   const imageRef = useRef(null);
 
-  // Beräknar bildens attribut "containerns" med metoden measure som kan användas till vissa View-element.
   const imageAttributes = () => {
     if (imageRef.current) {
       imageRef.current.measure((x, y, width, height, pageX, pageY) => {
 
-        // Sätt dimensioner
         setImgDim({x: x, y: y, width: width, height: height, pageX: pageX, pageY: pageY})
       });
     }
   };
-   //END----------------------------------------------------------------------------------------------
 
 
   const viewShotRef = useRef(null); // Reference to capture the view
 
   useEffect(() => {
     const fetchTextFieldCount = () => {
-      // Antalet hämtas från API anrop
-     
+     //number of textinputfields from API call 
     };
     fetchTextFieldCount();
     const responseCount = 0;
-    // Uppdatera textFieldsCount med svaret
+    // Update textFieldsCount with the response
     setTextFieldsCount(responseCount);
     setTexts(Array(responseCount).fill(""));
     fetchMemes();
@@ -84,11 +79,8 @@ export function GenerateView() {
   }, []);
 
   const handleTextChange = (text, index) => {
-    // Kopia av textarrayen som skrivs i input
     const newTexts = [...texts];
-    // Uppdaterar texten i texts-arrayen på rätt index
     newTexts[index] = text;
-    // Uppdaterar state med den nya texts-arrayen.
     setTexts(newTexts);
   };
 
@@ -99,15 +91,15 @@ export function GenerateView() {
   };
 
   const openColorPicker = (index) => {
-    setSelectedIndex(index); // koppla färg till vald input index
-    setColorPickerVisible(true); // visa colorPicker modalen
+    setSelectedIndex(index); 
+    setColorPickerVisible(true); 
   };
 
   const closeColorPicker = () => {
-    setColorPickerVisible(false); //Dölj colorPicker modalen
+    setColorPickerVisible(false); 
   };
 
-  //Nollställer textArrayen vid discard
+  //Clear the textArray on discard
   const handleDiscard = () => {
     setTexts(Array(textFieldsCount).fill(""));
     setCurrentMeme(null);
@@ -144,7 +136,6 @@ export function GenerateView() {
                 // Generating a unique id for each meme
                 id: Date.now(),
                 url: result,
-                texts: result,
                 colors: colors,
               };
           
@@ -172,7 +163,7 @@ export function GenerateView() {
 
   return (
     <LinearGradient
-      colors={["#00D9E1", "#133CE3", "#8D4EFA"]} // Gradient colors
+      colors={["#00D9E1", "#133CE3", "#8D4EFA"]} // Gradient colors for ba
       start={{ x: 0.3, y: 0 }}
       end={{ x: 0.7, y: 1 }}
       style={styles.container}
@@ -180,32 +171,25 @@ export function GenerateView() {
         <Text style={styles.titleTextStyle}> Generate Your Own Memes </Text>
 
         <ViewShot ref = {viewShotRef}  style={styles.memeContainer} >
-            {/* Sätter bild till den meme du klickar på. Finns ingen, väljs dummybild - JH */}
+            {/* Sets the image to the chosen meme */}
             <Image
-//START----------------------------------------------------------------------------------------------
-                // Sträng-källan till vald bild
+
                 source={imgRefSource ? { uri: imgRefSource } : imageSource}
-                // Referensen till bilden blir den valda memen
                 ref={imageRef} 
-                // Beräkna bildens attribut vid load-event när den laddas in i Image.
                 onLoad={imageAttributes}
 
                 style={styles.imageStyle}
                 resizeMode="contain"
-//END----------------------------------------------------------------------------------------------
 
             />
-            {/* Varje text som skrivs i inputs målas upp ovanpå memebilden, just nu bara på olika höjder av bilden.
-            Ska anpassas efter vilka kordinater som hämtas i APIn */}
+          
              {texts.map((text, index ) => ( 
 
 
- //START----------------------------------------------------------------------------------------------
-            //ImgDim skickas via props till MovableView
+            //ImgDim sends via props to MovableView
               <MovableView key={index} style={styles.overlayText}
               startingX={ 0 } startingY={ 50 + index * 40 }
               enteredText={text} color={colors[index]} imgDim={imgDim} />
- //END----------------------------------------------------------------------------------------------
 
 
               
@@ -236,7 +220,7 @@ export function GenerateView() {
         />
    
         <ScrollView style={styles.scrollView}>
-            {/* Skapar visst antal textinputs baserat på värdet av textfieldCount, detta baseras också på APIns hämtning. */}
+            {/* Create number of textinputs based on the value of textFieldCount which is based on the API fetch */}
             {showTextInput &&
                 Array.from({ length: textFieldsCount }).map((_, index) => (
                     <View key={index} style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10 }}>
@@ -248,7 +232,7 @@ export function GenerateView() {
                              
                         />
                         <LinearGradient
-                            colors={['#f43b47', '#0ba360']}
+                            colors={['#f43b47', '#0ba360']} //Gradients for the colorpicker button.
                             style={styles.colorButtonGradient}
                         >
                             <Pressable style={styles.colorPickButton} onPress={() => openColorPicker(index)}>
@@ -260,6 +244,7 @@ export function GenerateView() {
         </ScrollView>
 
         {isColorPickerVisible && (
+          //Modal represents the pop-up window containing the colorPicker
             <Modal transparent={true} visible={isColorPickerVisible} animationType="slide">
                 <View style={styles.modalContainer}>
                     <View style={styles.colorPickerContainer}>
@@ -269,7 +254,7 @@ export function GenerateView() {
                                 closeColorPicker();
                             }}
                             style={{ flex: 1 }}
-                            sliderComponent={DummySlider} //Lägg in den osynliga dummy slidern så colorPicker inte gnäller!
+                            sliderComponent={DummySlider} // Here is the invisible colorSlider component.
                         />
                         <View style={styles.buttonsContainer}>
                             <Pressable
@@ -313,7 +298,7 @@ export function GenerateView() {
 const styles = StyleSheet.create({
 
 
-    //Style för hela skärmen
+//Style for the screen
     container: {
         flex: 1,
         alignItems: "center",
@@ -325,7 +310,7 @@ const styles = StyleSheet.create({
         height: 150
     },
 
-    //Style för titeln
+    //Style for title
     titleTextStyle: {
         marginTop: 30,
         marginBottom: 20,
@@ -334,29 +319,26 @@ const styles = StyleSheet.create({
         fontSize: 25
     },
 
-    //Style för den bild som visar den skapade memen med text
+    //Style for the the generated meme with text.
     imageStyle: {
         width: 350,
         height: 350,
         resizeMode: 'cover'
     },
-
-    //Style för bilder i listan där hämtade memes visas
+//Style for images in the fetched meme list 
     listImage: {
         width: 100,
         height: 100,
         marginHorizontal: 20,
     },
-
-    //Style för själva listan
+    //Style for the FlatList
     listStyle: {
         width: 300,
         height: 300,
         marginTop: 20,
         maxHeight: 120
     },
-
-    //Style på container för att overlayText ska centreras med image
+    
     memeContainer: {
         position: "relative",
         alignItems: "center",
@@ -364,7 +346,6 @@ const styles = StyleSheet.create({
             
     },
 
-    //Style för texten ovanpå meme
     overlayText: {
         position: "absolute",
         color: "black",
@@ -374,7 +355,7 @@ const styles = StyleSheet.create({
         borderRadius: 5,
     },
 
-    //Style för inputfields
+    //Style for inputfields
     textInput: {
         height: 35,
         width: 200,
@@ -385,7 +366,7 @@ const styles = StyleSheet.create({
         marginRight:5
     },
 
-    //Style för buttonContainer
+    //Style for buttonContainer
     buttonContainer: {
         flexDirection: "row",
         width: '100%',
@@ -394,7 +375,7 @@ const styles = StyleSheet.create({
         justifyContent: "space-between"
     },
 
-    //Style för knappar
+    //Style for buttons
     pressableStyle: {
         flex: 1,
         margin: 10,
@@ -437,7 +418,9 @@ const styles = StyleSheet.create({
         backgroundColor: '#D3D3D398',
         borderRadius: 35,
         marginTop: 25,
-        //Knappar för "svart" & "Vit" i Color pickern
+
+        
+        //Black & White color buttons inside the color picker
     }, colorButton: {
         backgroundColor: "lightgray",
         padding: 10,
@@ -446,7 +429,8 @@ const styles = StyleSheet.create({
         margintop: 10,
        
     },
-    //Knapp För att öppna colorPicker.
+    
+    //Open colorPicker button
     colorPickButton: {
         padding: 10,
         marginLeft: 10,
@@ -455,18 +439,18 @@ const styles = StyleSheet.create({
         height: 25,
       
     },
-    // Gradient för knapp till öppna colorPicker
+    //Gradient for the Open colorPicker button
     colorButtonGradient: {
         borderRadius: 100,
         padding: 1,
     },
-   // mörklägger bakgrunden när man öppnar ColorPicker
+  //Shadesout the background when opening the colorPicker Modal
     modalContainer: {
         flex: 1,
         justifyContent: 'center',
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
     },
-    //Design för ColorPicker rutan 
+//ColorPicker container design
     colorPickerContainer: {
         margin: 20,
         padding: 20,
@@ -475,13 +459,14 @@ const styles = StyleSheet.create({
         flex: 0.5,
         justifyContent: 'center',
     },
-    // till knappen för att stänga colorPicker
+    // Close button for colorPicker
     closeButton: {
         backgroundColor: "lightgray",
         padding: 10,
         borderRadius: 5,
         marginTop: 10,
     },
+    //Texxt for close button
     closeButtonText: {
         color: 'black',
         textAlign: 'center',
@@ -490,7 +475,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-around',
         marginTop: 20,
-        width: '80%', // Make buttons container narrower
+        width: '80%', 
     },
 })
 

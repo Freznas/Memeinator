@@ -6,7 +6,7 @@ export function DiscardButtonAnimation({ onPress, buttonText, buttonStyle, textS
     const colorValue = useRef(new Animated.Value(0)).current;
     const scaleValue = useRef(new Animated.Value(1)).current;
 
-   
+   // An animation for the discard button which controls color and movement simultaneously. 
     const animateButton = () => {
         Animated.parallel([
             Animated.sequence([
@@ -46,7 +46,6 @@ export function DiscardButtonAnimation({ onPress, buttonText, buttonStyle, textS
         inputRange: [0, 1],
         outputRange: ['lightgray', 'red'],
     });
-
     return (
         <Animated.View style={{ flex: 1, margin: 10, borderRadius: 5, backgroundColor: backgroundColorInterpolation, transform: [{ scale: scaleValue }] }}>
             <Pressable

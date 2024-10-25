@@ -1,15 +1,17 @@
-
-//Import dependencies & modules from react/react-native
 import * as React from "react";
 import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Icon from "react-native-vector-icons/MaterialIcons";
-//Import local modules
-import { GenerateView } from "./GenerateView"; // Importera GenerateView
-import { SavedView } from "./SavedView"; // Importera SavedView
+import { GenerateView } from "./GenerateView"; 
+import { SavedView } from "./SavedView"; 
 
 
 const Tab = createBottomTabNavigator();
+
+
+// GitHub Länk:  https://github.com/Freznas/Memeinator.git 
+
+
 
 const MyTheme = {
   ...DefaultTheme,
@@ -18,7 +20,7 @@ const MyTheme = {
     primary: 'black',
   },
 };
-
+//create the bottomTabNavigator to switch between the two pages.
 export default function App() {
   return (
     <NavigationContainer theme={MyTheme}>
@@ -45,12 +47,12 @@ export default function App() {
         <Tab.Screen
           name="Generator"
           component={GenerateView}
-          options={{ headerShown: false }} // Döljer Headern för "GenerateView" -JB
+          options={{ headerShown: false }} // Hides the header for "GenerateView"
         />
         <Tab.Screen
           name="Your memes"
           component={SavedView}
-          options={{ headerShown: false }} // Döljer Headern för "SavedView" -JB
+          options={{ headerShown: false }} // Hides the header for "SavedView"
         />
       </Tab.Navigator>
     </NavigationContainer>

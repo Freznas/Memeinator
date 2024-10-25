@@ -14,7 +14,8 @@ export function MovableView({ enteredText, startingX, startingY, color, imgDim }
             onPanResponderMove: Animated.event([null, { dx: posX, dy: posY }], {
                 useNativeDriver: false,
 
-                // Listener skickar vidare gestureState till check bounds nedan
+              
+                //Listener sends the gestureState to the Checkbounds(see row 33)
                 listener: (e, gestureState) => {
                     checkBounds(e, gestureState)
                 }
@@ -27,8 +28,8 @@ export function MovableView({ enteredText, startingX, startingY, color, imgDim }
             
     ).current;
 
-    // Kollar bounds för MovableView under tiden texten flyttas.
-    // Den faktiska X,Y-positionen (pageX och pageY) för contanern i bilden via props.
+
+    //Checks bounds for MovableView when moving the text.
     function checkBounds(_, gestureState) {
         if (gestureState.moveX > imgDim.pageX + imgDim.width ||
             gestureState.moveX < imgDim.pageX) {
@@ -60,7 +61,6 @@ export function MovableView({ enteredText, startingX, startingY, color, imgDim }
     );
 }
 
-// Kom ihåg att definiera stilarna nedan
 const styles = {
     movableContainer: {
         position: 'absolute',

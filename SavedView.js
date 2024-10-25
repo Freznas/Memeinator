@@ -12,7 +12,6 @@ import { LinearGradient } from "expo-linear-gradient";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { useFocusEffect } from "@react-navigation/native";
-// Android libs for saving file to device
 import * as FileSystem from 'expo-file-system';
 import * as MediaLibrary from 'expo-media-library';
 import { Asset } from "expo-asset";
@@ -21,6 +20,8 @@ export function SavedView() {
   const [selectedMeme, setSelectedMeme] = useState(null);
   const [downloadedFileUri, setDownloadedFileUri] = useState(null);
   
+
+  //This was supposed to handle the function to download the image to the device media-gallery
   /*const downloadMeme = async (meme) => {
     console.log(meme.url)
     
@@ -55,8 +56,8 @@ export function SavedView() {
       console.error('Error downloading the image:', error);
     }
 };*/
-  // A function to load existing memes
 
+  // Function to load existing memes
   const loadMemes = async () => {
     try {
       const storedMemes = await AsyncStorage.getItem("memesList");
@@ -136,7 +137,7 @@ export function SavedView() {
 
   return (
     <LinearGradient
-      colors={["#00D9E1", "#133CE3", "#8D4EFA"]}
+      colors={["#00D9E1", "#133CE3", "#8D4EFA"]} //Background Gradient for the entire screen
       start={{ x: 0.3, y: 0 }}
       end={{ x: 0.7, y: 1 }}
       style={styles.container}
